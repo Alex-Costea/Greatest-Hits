@@ -13,7 +13,7 @@ with open("male","r") as male_file:
                 male=[x for x in male_file.read().split("\n") if x!=""]
                 female=[x for x in female_file.read().split("\n") if x!=""]
                 last=[x for x in last_file.read().split("\n") if x!=""]
-                titles=[x for x in titles_file.read().split("\n") if x!=""]
+                titles=list(set([x for x in titles_file.read().split("\n") if x!=""]))
 
 def male_arist():
     firstname=random.choice(male)
