@@ -60,7 +60,8 @@ class song:
         self.hype=hypedecay(self.week-1)*(self.hype_randomizer)/2
         self.popularity=1-(1-self.popularity)*(1-self.hype)
         self.fan_reception=self.fan_reception*(self.decay+random.randint(0,20)*0.001)
-        self.points=(self.popularity*self.fan_reception*10)**1.5
+        self.points=(self.popularity*self.fan_reception*10)
+        self.points=self.points**1.5/((100/self.points))
 
 full_points=dict()
 
