@@ -1,3 +1,3 @@
 # Greatest Hits!
 
-WIP
+Music chart simulator
