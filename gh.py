@@ -64,7 +64,7 @@ with open("charts","w") as charts_file:
     idc=1000
     for i in range(153):
         week=i-100
-        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:40]
+        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:50]
         if week>0:
             charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
@@ -102,5 +102,5 @@ with open("charts","w") as charts_file:
             last_sorted=[x.myid for x in sorted_l]
             
     charts_file.write("Year End\n")
-    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:40]):
+    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:100]):
         charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]+"\n")
