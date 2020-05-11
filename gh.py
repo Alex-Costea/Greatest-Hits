@@ -73,16 +73,20 @@ with open("charts","w") as charts_file:
     idc=1000
     for i in range(153):
         week=i-100
-        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:100]
+        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:40]
         if week>0:
-            charts_file.write("week "+str(week)+"\n")
+            charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
+                name_id=x.name+"@"+str(x.myid)
                 try:
                     last_pos=list(map(lambda y:y==x.myid,last_sorted)).index(True)
                 except ValueError:
                     last_pos=-1
                 if last_pos==-1:
-                    mystr="(new)"
+                    if name_id in full_points:
+                        mystr="(re-entry)"
+                    else:
+                        mystr="(new)"
                 elif last_pos==j:
                     mystr="(=)"
                 elif last_pos>j:
@@ -90,7 +94,6 @@ with open("charts","w") as charts_file:
                 else:
                     mystr="("+str(last_pos-j)+")"
                 charts_file.write("#"+str(j+1)+" "+x.name+" "+mystr+" "+str(int(x.points))+".\n")
-                name_id=x.name+"@"+str(x.myid)
                 full_points[name_id]=full_points.get(name_id,0)+x.points
             charts_file.write("\n")
         l=[x for x in l if x.points>1]
@@ -102,5 +105,5 @@ with open("charts","w") as charts_file:
             last_sorted=[x.myid for x in sorted_l]
             
     charts_file.write("Year End\n")
-    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:100]):
+    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:40]):
         charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]+"\n")
