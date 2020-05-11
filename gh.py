@@ -48,7 +48,7 @@ class song:
         #self.add_week()
     def add_week(self):
         self.week+=1
-        self.hype=((10**(random.randint(40,160)/100))/(10**1.6))/4*(0.99**(self.week-1))
+        self.hype=((10**(random.randint(40,160)/100))/(10**1.6))/3
         self.popularity=1-(1-self.popularity)*(1-self.hype)
         self.fan_reception=self.fan_reception*(self.decay+random.randint(0,20)*0.001)
         self.points=(self.popularity*self.fan_reception*10)
