@@ -57,11 +57,12 @@ class song:
     def add_week(self):
         self.week+=1
         self.hype_randomizer=(10**(random.randint(40,160)/100))/(10**1.6)
-        self.hype=hypedecay(self.week-1)*(self.hype_randomizer)/2
+        #self.hype=hypedecay(self.week-1)*(self.hype_randomizer)/3
+        self.hype=(self.hype_randomizer)/4
         self.popularity=1-(1-self.popularity)*(1-self.hype)
         self.fan_reception=self.fan_reception*(self.decay+random.randint(0,20)*0.001)
         self.points=(self.popularity*self.fan_reception*10)
-        self.points=self.points**1.5/((100/self.points))
+        self.points=self.points**1.5/((100/self.points))*1.5
 
 full_points=dict()
 
@@ -93,7 +94,13 @@ with open("charts","w") as charts_file:
                     mystr="(+"+str(last_pos-j)+")"
                 else:
                     mystr="("+str(last_pos-j)+")"
-                charts_file.write("#"+str(j+1)+" "+x.name+" "+mystr+" "+str(int(x.points))+".\n")
+                charts_file.write("#"+str(j+1)+" "+
+                                  x.name+" "+
+                                  mystr+
+                                  " points: "+str(int(x.points))+
+                                  " popularity: "+str(int(1000*x.popularity)/10)+"%"
+                                  " reception: "+str(int(x.fan_reception*100)/100)+"/10"+
+                                  "\n")
                 full_points[name_id]=full_points.get(name_id,0)+x.points
             charts_file.write("\n")
         l=[x for x in l if x.points>1]
