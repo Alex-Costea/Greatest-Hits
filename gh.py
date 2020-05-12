@@ -89,8 +89,9 @@ with open("charts","w") as charts_file:
                                   mystr+
                                   " (points: "+str(int(x.points))+
                                   " popularity: "+str(int(1000*x.popularity)/10)+"%"
-                                  " reception: "+str(int(x.fan_reception*100)/100)+"/10)"+
-                                  "\n")
+                                  " reception: "+str(int(x.fan_reception*100)/100)+"/10"+
+                                  " week: "+str(x.week)+
+                                  ")\n")
                 full_points[name_id]=full_points.get(name_id,0)+x.points
             charts_file.write("\n")
         l=[x for x in l if x.points>1]
