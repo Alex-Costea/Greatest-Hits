@@ -48,13 +48,14 @@ class song:
         #self.add_week()
     def add_week(self):
         self.week+=1
-        self.hype=((10**(random.randint(40,160)/100))/(10**1.6))/3*(0.92**(self.week-1))
+        self.hype=((10**(random.randint(40,160)/100))/(10**1.6))/2.5*(0.99**(self.week-1))
         self.popularity=1-(1-self.popularity)*(1-self.hype)
         self.fan_reception=self.fan_reception*(self.decay+random.randint(0,20)*0.001)
         self.points=(self.popularity*self.fan_reception*10)
         self.points=self.points**1.5/((100/self.points))*1.5
 
 full_points=dict()
+peak=dict()
 
 with open("charts","w") as charts_file:
     l=[song(i) for i in range(0,100)]
@@ -93,6 +94,7 @@ with open("charts","w") as charts_file:
                                   " week: "+str(x.week)+
                                   ")\n")
                 full_points[name_id]=full_points.get(name_id,0)+x.points
+                peak[name_id]=min(peak.get(name_id,float('inf')),j+1)
             charts_file.write("\n")
         l=[x for x in l if x.points>1]
         l=l+[song(idc+i) for i in range(0,20)]
@@ -104,4 +106,5 @@ with open("charts","w") as charts_file:
             
     charts_file.write("Year End\n")
     for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:100]):
-        charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]+"\n")
+        charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]
+                          +" (peak: "+str(peak[y[0]])+")\n")
