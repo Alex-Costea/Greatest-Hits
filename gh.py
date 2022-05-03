@@ -82,12 +82,12 @@ with open("charts","w") as charts_file:
                             mystr="(re-entry)"
                         else:
                             mystr="(new)"
-                    elif last_pos>99:
-                        mystr="(new)"
                     elif last_pos==j:
                         mystr="(=)"
                     elif last_pos>19 and name_id in peak and peak[name_id]<20:
-                        mystr="(re-entry; +"+str(last_pos-j)+")"
+                        mystr="(re-entry)"
+                    elif last_pos>19:
+                        mystr="(new)"
                     elif last_pos>j:
                         mystr="(+"+str(last_pos-j)+")"
                     else:
