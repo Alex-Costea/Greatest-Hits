@@ -67,7 +67,7 @@ with open("charts","w") as charts_file:
     id_current=1000
     for i in range(153):
         week=i-100
-        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:100]
+        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)
         if week>0:
             charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
@@ -84,6 +84,8 @@ with open("charts","w") as charts_file:
                             mystr="(new)"
                     elif last_pos==j:
                         mystr="(=)"
+                    elif last_pos>19 and name_id in peak and peak[name_id]<20:
+                        mystr="(re-entry; +"+str(last_pos-j)+")"
                     elif last_pos>j:
                         mystr="(+"+str(last_pos-j)+")"
                     else:
