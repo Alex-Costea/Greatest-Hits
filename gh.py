@@ -107,6 +107,6 @@ with open("charts","w") as charts_file:
             last_sorted=[x.myid for x in sorted_l]
             
     charts_file.write("Year End\n")
-    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:100]):
+    for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:40]):
         charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]
                           +" (peak: "+str(peak[y[0]])+")\n")
