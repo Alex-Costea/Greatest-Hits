@@ -58,8 +58,8 @@ class song:
 
 full_points=dict()
 peak=dict()
-nr_top=100
-weeks=1000
+nr_top=20
+weeks=52
 
 with open("charts","w") as charts_file:
     l=[song(i) for i in range(0,100)]
@@ -114,7 +114,7 @@ with open("charts","w") as charts_file:
             last_sorted=[x.myid for x in sorted_l]
             
     charts_file.write("Year End\n")
-    year_end_nr=100
+    year_end_nr=40
     for i,y in enumerate(sorted(full_points.items(), key=operator.itemgetter(1),reverse=True)[:year_end_nr]):
         charts_file.write("#"+str(i+1)+" "+y[0].split("@")[0]
                           +" (peak: "+str(peak[y[0]])+")\n")
