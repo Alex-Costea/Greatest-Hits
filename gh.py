@@ -67,34 +67,35 @@ with open("charts","w") as charts_file:
     id_current=1000
     for i in range(153):
         week=i-100
-        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:20]
+        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:100]
         if week>0:
             charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
                 name_id=x.name+"@"+str(x.myid)
-                try:
-                    last_pos=list(map(lambda y:y==x.myid,last_sorted)).index(True)
-                except ValueError:
-                    last_pos=-1
-                if last_pos==-1:
-                    if name_id in full_points:
-                        mystr="(re-entry)"
+                if j<20:
+                    try:
+                        last_pos=list(map(lambda y:y==x.myid,last_sorted)).index(True)
+                    except ValueError:
+                        last_pos=-1
+                    if last_pos==-1:
+                        if name_id in full_points:
+                            mystr="(re-entry)"
+                        else:
+                            mystr="(new)"
+                    elif last_pos==j:
+                        mystr="(=)"
+                    elif last_pos>j:
+                        mystr="(+"+str(last_pos-j)+")"
                     else:
-                        mystr="(new)"
-                elif last_pos==j:
-                    mystr="(=)"
-                elif last_pos>j:
-                    mystr="(+"+str(last_pos-j)+")"
-                else:
-                    mystr="("+str(last_pos-j)+")"
-                charts_file.write("#"+str(j+1)+" "+
-                                  x.name+" "+
-                                  mystr+
-                                  " (points: "+str(int(x.points))+
-                                  #" popularity: "+str(int(1000*x.popularity)/10)+"%"
-                                  #" reception: "+str(int(x.fan_reception*100)/100)+"/10"+
-                                  "; week: "+str(x.week)+
-                                  ")\n")
+                        mystr="("+str(last_pos-j)+")"
+                    charts_file.write("#"+str(j+1)+" "+
+                                      x.name+" "+
+                                      mystr+
+                                      " (points: "+str(int(x.points))+
+                                      #" popularity: "+str(int(1000*x.popularity)/10)+"%"
+                                      #" reception: "+str(int(x.fan_reception*100)/100)+"/10"+
+                                      "; week: "+str(x.week)+
+                                      ")\n")
                 full_points[name_id]=full_points.get(name_id,0)+x.points
                 peak[name_id]=min(peak.get(name_id,float('inf')),j+1)
             charts_file.write("\n")
