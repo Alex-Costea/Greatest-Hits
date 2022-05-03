@@ -58,6 +58,8 @@ class song:
 
 full_points=dict()
 peak=dict()
+nr_top=100
+weeks=52
 
 with open("charts","w") as charts_file:
     l=[song(i) for i in range(0,100)]
@@ -65,14 +67,14 @@ with open("charts","w") as charts_file:
             x.add_week()
     last_sorted=None
     id_current=1000
-    for i in range(153):
+    for i in range(101+weeks):
         week=i-100
         sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)
         if week>0:
             charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
                 name_id=x.name+"@"+str(x.myid)
-                if j<20:
+                if j<nr_top:
                     try:
                         last_pos=list(map(lambda y:y==x.myid,last_sorted)).index(True)
                     except ValueError:
@@ -84,9 +86,9 @@ with open("charts","w") as charts_file:
                             mystr="(new)"
                     elif last_pos==j:
                         mystr="(=)"
-                    elif last_pos>19 and name_id in peak and peak[name_id]<20:
+                    elif last_pos>=nr_top and name_id in peak and peak[name_id]<nr_top:
                         mystr="(re-entry)"
-                    elif last_pos>19:
+                    elif last_pos>=nr_top:
                         mystr="(new)"
                     elif last_pos>j:
                         mystr="(+"+str(last_pos-j)+")"
