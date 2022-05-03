@@ -42,7 +42,8 @@ class song:
         self.name=random.choice(artists)+" -- "+song_title()
         self.decay=random.randint(90,96)*0.01
         self.popularity=(random.randint(0,90)/100)**4
-        self.fan_reception=random.randint(100,1000)/100.0
+        self.quality=random.randint(100,1000)/100.0
+        self.fan_reception=self.quality
         self.myid=myid
         self.week=0
         #self.add_week()
@@ -51,8 +52,9 @@ class song:
         self.hype=((10**(random.randint(40,160)/100))/(10**1.6))/2.5*(0.99**(self.week-1))
         self.popularity=1-(1-self.popularity)*(1-self.hype)
         self.fan_reception=self.fan_reception*(self.decay+random.randint(0,20)*0.001)
-        self.points=(self.popularity*self.fan_reception*10)
-        self.points=self.points**1.5/((100/self.points))*1.5
+        #print(self.popularity,self.fan_reception,self.popularity*self.fan_reception/10)
+        self.points=((self.popularity*self.fan_reception/10)**1.5)*100
+        self.points=self.points**1.5/((100/self.points))*2
 
 full_points=dict()
 peak=dict()
@@ -62,10 +64,10 @@ with open("charts","w") as charts_file:
     for x in l:
             x.add_week()
     last_sorted=None
-    idc=1000
+    id_current=1000
     for i in range(153):
         week=i-100
-        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:50]
+        sorted_l=sorted(l,key=(lambda x:x.points),reverse=True)[:20]
         if week>0:
             charts_file.write("Week "+str(week)+"\n")
             for j,x in enumerate(sorted_l):
@@ -89,16 +91,16 @@ with open("charts","w") as charts_file:
                                   x.name+" "+
                                   mystr+
                                   " (points: "+str(int(x.points))+
-                                  " popularity: "+str(int(1000*x.popularity)/10)+"%"
-                                  " reception: "+str(int(x.fan_reception*100)/100)+"/10"+
-                                  " week: "+str(x.week)+
+                                  #" popularity: "+str(int(1000*x.popularity)/10)+"%"
+                                  #" reception: "+str(int(x.fan_reception*100)/100)+"/10"+
+                                  "; week: "+str(x.week)+
                                   ")\n")
                 full_points[name_id]=full_points.get(name_id,0)+x.points
                 peak[name_id]=min(peak.get(name_id,float('inf')),j+1)
             charts_file.write("\n")
         l=[x for x in l if x.points>1]
-        l=l+[song(idc+i) for i in range(0,20)]
-        idc+=1000
+        l=l+[song(id_current+i) for i in range(0,20)]
+        id_current+=1000
         for x in l:
             x.add_week()
         if week>=0:
