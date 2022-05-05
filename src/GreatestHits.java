@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.*;
 import java.io.File;
 
+import static java.lang.Math.min;
+
 class Artist {
     String name;
     ArrayList<Song> songs = new ArrayList<>();
@@ -22,9 +24,10 @@ class Song {
     double quality;
     double fanReception;
     static int totalID=0;
-    int currentID;
+    int ID;
     int week;
     double points;
+    int artistId;
 
     Song(String name)
     {
@@ -34,7 +37,7 @@ class Song {
         this.quality=ran.nextInt(100,1001)/100.0;
         this.fanReception=this.quality;
         totalID+=1;
-        this.currentID=totalID;
+        this.ID =totalID;
         this.week=0;
     }
 
@@ -46,7 +49,8 @@ class Song {
                 /Math.pow(10,1.6)/2.5*Math.pow(0.99,this.week-1);
 
         this.popularity=1-(1-this.popularity)*(1-hype);
-        this.fanReception=this.fanReception*(this.decay+ran.nextInt(21)*0.001);
+        this.fanReception=this.fanReception*
+                (this.decay+ran.nextInt(21)*0.001);
 
         //again, no clue
         this.points=Math.pow(this.popularity*this.fanReception/10,1.5)*100;
@@ -55,17 +59,18 @@ class Song {
 }
 
 class GreatestHits {
-    static final int nr_top=20;
+    static final int nrTop =20;
     static final int weeks=52;
     static ArrayList<String> maleNames = new ArrayList<>();
     static ArrayList<String> femaleNames = new ArrayList<>();
     static ArrayList<String> lastNames = new ArrayList<>();
     static ArrayList<String> titles = new ArrayList<>();
     static Random ran = new Random();
-    HashMap<Integer,Double> fullPoints=new HashMap<>();
-    HashMap<Integer,Double> peaks=new HashMap<>();
+    static HashMap<Integer,Double> fullPoints=new HashMap<>();
+    static TreeMap<Integer,Integer> peaks=new TreeMap<>();
     static ArrayList<Artist> artists=new ArrayList<>();
     static ArrayList<Song> songs=new ArrayList<>();
+    static HashMap<Integer,Song> songsById=new HashMap<>();
 
 
     static void InitNames() throws FileNotFoundException {
@@ -132,6 +137,47 @@ class GreatestHits {
         return name;
     }
 
+    static void addSongs(int nr)
+    {
+        for(int i=0;i<nr;i++) {
+            Song newSong=new Song(pickTitle());
+            newSong.artistId=ran.nextInt(500);
+            songs.add(newSong);
+            artists.get(newSong.artistId).songs.add(newSong);
+        }
+    }
+
+    static String FormatChartEntry(int position,
+                                   String artistName,
+                                   String songName,
+                                   int lastWeek,
+                                   int points,
+                                   int weeks,
+                                   boolean newAppearance)
+    {
+        String insideParen;
+        if(lastWeek==-1 && newAppearance)
+            insideParen="new";
+        else if(lastWeek==-1)
+            insideParen="re-entry";
+        else if(lastWeek==position)
+            insideParen="=";
+        else if(lastWeek>position)
+            insideParen=String.format("+%d",lastWeek-position);
+        else insideParen=String.format("%d",lastWeek-position);
+        return String.format("#%d %s -- %s (%s) (points: %d; week: %d)\n",
+                position,artistName,songName,insideParen,points,weeks);
+    }
+
+    static String FormatYearEndEntry(int position,
+                                     String artistName,
+                                     String songName,
+                                     int peak)
+    {
+        return String.format("#%d %s -- %s (peak: %d)\n",
+                position,artistName,songName,peak);
+    }
+
     public static void main(String[] args) {
         try {
             InitNames();
@@ -142,15 +188,82 @@ class GreatestHits {
             for(int i=0;i<500;i++)
                 artists.add(new Artist(ArtistName()));
 
-            for(int i=0;i<100;i++) {
-                songs.add(new Song(pickTitle()));
-                songs.get(i).addWeek();
+            addSongs(100);
+
+            HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
+
+            for(int i=-49;i<=weeks;i++) {
+                for(Song song : songs) {
+                    song.addWeek();
+                    if(!songsById.containsKey(song.ID))
+                        songsById.put(song.ID,song);
+                }
+                TreeMap<Double,Song> sortedSongs =new TreeMap<>();
+                for (Song song : songs)
+                    sortedSongs.put(song.points,song);
+                NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
+                int j=0;
+                if(i>0) {
+                    fw.write("Week ");
+                    fw.write(String.valueOf(i));
+                    fw.write("\n");
+                    for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
+                        Song current = entry.getValue();
+                        j++;
+                        if (j <= nrTop) {
+                            //format
+                            int lastPos;
+                            lastPos = lastWeekPos.getOrDefault(current.ID, -1);
+                            if(lastPos> nrTop) lastPos=-1;
+                            fw.write(FormatChartEntry(j,
+                                    artists.get(current.artistId).name,
+                                    current.name,
+                                    lastPos,
+                                    (int)current.points,
+                                    current.week,
+                                    peaks.getOrDefault(current.ID,999)> nrTop));
+                        }
+
+                        if (!fullPoints.containsKey(current.ID))
+                            fullPoints.put(current.ID, current.points);
+                        else fullPoints.put(current.ID,
+                                fullPoints.get(current.ID) + current.points);
+
+                        peaks.put(current.ID, min(peaks.getOrDefault(current.ID,999), j));
+                    }
+                    fw.write("\n");
+                }
+
+                songs.removeIf(x ->x.points<1);
+                addSongs(20);
+                if(i>=0)
+                {
+                    lastWeekPos=new HashMap<>();
+                    j=0;
+                    for (Map.Entry<Double, Song> entry : songsList.entrySet())
+                    {
+                        j++;
+                        lastWeekPos.put(entry.getValue().ID,j);
+                    }
+                }
             }
 
-            HashMap<Integer,Integer> lastPos =new HashMap<>();
-
-            for(int i=-49;i<=52;i++) {
-                //to be continued
+            fw.write("Year End\n");
+            TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
+            for(Song song:songs)
+                if(fullPoints.containsKey(song.ID))
+                    fullPointsOrdered.put(fullPoints.get(song.ID),song.ID);
+            NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
+            int i=0;
+            for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
+                i++;
+                if(i>40) break;
+                Song current=songsById.get(entry.getValue());
+                fw.write(FormatYearEndEntry(i,
+                        artists.get(current.artistId).name,
+                        current.name,
+                        //fullPoints.getOrDefault(entry.getKey(),0.0).intValue()));
+                        peaks.getOrDefault(entry.getValue(),999)));
             }
             fw.close();
         } catch (IOException e) {
