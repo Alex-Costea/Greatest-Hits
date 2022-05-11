@@ -16,7 +16,7 @@ class Artist {
     Artist(String name)
     {
         this.name=name;
-        this.popularity=ran.nextInt(0,1001)/1000.0;
+        this.popularity=ran.nextInt(0,901)/1000.0;
         this.quality=ran.nextInt(100,1001)/100.0;
     }
 
@@ -42,9 +42,10 @@ class Song {
         this.artistId=artistID;
         this.artist=GreatestHits.artists.get(artistID);
         this.decay=ran.nextInt(90,97)*0.01;
-        double offset=ran.nextGaussian()/7;
-        this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offset)),4);
-        this.quality=min(10,max(1,artist.quality+ran.nextGaussian()));
+        double offsetPopularity=ran.nextGaussian()/5;
+        this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offsetPopularity)),4);
+        double offsetQuality=ran.nextGaussian();
+        this.quality=min(10,max(1,artist.quality+offsetQuality));
         this.fanReception=this.quality;
         totalID+=1;
         this.ID =totalID;
@@ -202,9 +203,14 @@ class GreatestHits {
             File file=new File("charts");
             FileWriter fw = new FileWriter(file);
 
-            for(int i=0;i<nrArtists;i++)
-                artists.add(new Artist(ArtistName()));
-
+            HashSet<String> artistNames=new HashSet<>();
+            for(int i=0;i<nrArtists;i++) {
+                String artistName=ArtistName();
+                while(artistNames.contains(artistName))
+                    artistName=ArtistName();
+                artistNames.add(artistName);
+                artists.add(new Artist(artistName));
+            }
             addSongs(100);
 
             HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
