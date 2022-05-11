@@ -16,7 +16,7 @@ class Artist {
     Artist(String name)
     {
         this.name=name;
-        this.popularity=ran.nextInt(0,901)/1000.0;
+        this.popularity=ran.nextInt(0,911)/1000.0;
         this.quality=ran.nextInt(100,1001)/100.0;
     }
 
