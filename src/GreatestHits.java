@@ -4,14 +4,20 @@ import java.io.IOException;
 import java.util.*;
 import java.io.File;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 class Artist {
     String name;
     ArrayList<Song> songs = new ArrayList<>();
+    double popularity;
+    double quality;
+    static Random ran = new Random();
     Artist(String name)
     {
         this.name=name;
+        this.popularity=ran.nextInt(0,1001)/1000.0;
+        this.quality=ran.nextInt(100,1001)/100.0;
     }
 
 }
@@ -28,13 +34,17 @@ class Song {
     int week;
     double points;
     int artistId;
+    Artist artist;
 
-    Song(String name)
+    Song(String name,int artistID)
     {
         this.name=name;
+        this.artistId=artistID;
+        this.artist=GreatestHits.artists.get(artistID);
         this.decay=ran.nextInt(90,97)*0.01;
-        this.popularity=Math.pow(ran.nextInt(0,91)*0.01,4);
-        this.quality=ran.nextInt(100,1001)/100.0;
+        double offset=ran.nextGaussian()/7;
+        this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offset)),4);
+        this.quality=min(10,max(1,artist.quality+ran.nextGaussian()));
         this.fanReception=this.quality;
         totalID+=1;
         this.ID =totalID;
@@ -56,6 +66,7 @@ class Song {
         this.points=Math.pow(this.popularity*this.fanReception/10,1.5)*100;
         this.points=Math.pow(this.points,1.5)/((100/this.points))*2;
     }
+
 }
 
 class GreatestHits {
@@ -71,6 +82,7 @@ class GreatestHits {
     static ArrayList<Artist> artists=new ArrayList<>();
     static ArrayList<Song> songs=new ArrayList<>();
     static HashMap<Integer,Song> songsById=new HashMap<>();
+    static int nrArtists=250;
 
 
     static void InitNames() throws FileNotFoundException {
@@ -140,8 +152,7 @@ class GreatestHits {
     static void addSongs(int nr)
     {
         for(int i=0;i<nr;i++) {
-            Song newSong=new Song(pickTitle());
-            newSong.artistId=ran.nextInt(500);
+            Song newSong=new Song(pickTitle(),ran.nextInt(nrArtists));
             songs.add(newSong);
             artists.get(newSong.artistId).songs.add(newSong);
         }
@@ -185,7 +196,7 @@ class GreatestHits {
             File file=new File("charts");
             FileWriter fw = new FileWriter(file);
 
-            for(int i=0;i<500;i++)
+            for(int i=0;i<nrArtists;i++)
                 artists.add(new Artist(ArtistName()));
 
             addSongs(100);
