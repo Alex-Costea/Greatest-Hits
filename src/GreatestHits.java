@@ -12,12 +12,19 @@ class Artist {
     ArrayList<Song> songs = new ArrayList<>();
     double popularity;
     double quality;
+    int ID;
     static Random ran = new Random();
-    Artist(String name)
+    Artist(String name,int ID)
     {
         this.name=name;
+        this.ID=ID;
         this.popularity=ran.nextInt(0,911)/1000.0;
         this.quality=ran.nextInt(100,1001)/100.0;
+    }
+
+    double songReleaseProb()
+    {
+        return ran.nextInt(101)/100.0;
     }
 
 }
@@ -71,7 +78,7 @@ class Song {
 }
 
 class GreatestHits {
-    static final int nrTop =20;
+    static final int nrChartEntries =20;
     static final int weeks=52;
     static ArrayList<String> maleNames = new ArrayList<>();
     static ArrayList<String> femaleNames = new ArrayList<>();
@@ -158,10 +165,16 @@ class GreatestHits {
 
     static void addSongs(int nr)
     {
-        for(int i=0;i<nr;i++) {
-            Song newSong=new Song(pickTitle(),ran.nextInt(nrArtists));
-            songs.add(newSong);
-            artists.get(newSong.artistId).songs.add(newSong);
+        double minSongProb=1.0*nr/nrArtists;
+        for(Artist artist:artists)
+        {
+            double prob=artist.songReleaseProb();
+            if(prob<minSongProb)
+            {
+                Song newSong=new Song(pickTitle(),artist.ID);
+                songs.add(newSong);
+                artist.songs.add(newSong);
+            }
         }
     }
 
@@ -209,7 +222,7 @@ class GreatestHits {
                 while(artistNames.contains(artistName))
                     artistName=ArtistName();
                 artistNames.add(artistName);
-                artists.add(new Artist(artistName));
+                artists.add(new Artist(artistName,i));
             }
             addSongs(100);
 
@@ -233,18 +246,18 @@ class GreatestHits {
                     for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                         Song current = entry.getValue();
                         j++;
-                        if (j <= nrTop) {
+                        if (j <= nrChartEntries) {
                             //format
                             int lastPos;
                             lastPos = lastWeekPos.getOrDefault(current.ID, -1);
-                            if(lastPos> nrTop) lastPos=-1;
+                            if(lastPos> nrChartEntries) lastPos=-1;
                             fw.write(FormatChartEntry(j,
                                     artists.get(current.artistId).name,
                                     current.name,
                                     lastPos,
                                     (int)current.points,
                                     current.week,
-                                    peaks.getOrDefault(current.ID,999)> nrTop));
+                                    peaks.getOrDefault(current.ID,999)> nrChartEntries));
                         }
 
                         if (!fullPoints.containsKey(current.ID))
@@ -285,7 +298,6 @@ class GreatestHits {
                 fw.write(FormatYearEndEntry(i,
                         artists.get(current.artistId).name,
                         current.name,
-                        //fullPoints.getOrDefault(entry.getKey(),0.0).intValue()));
                         peaks.getOrDefault(entry.getValue(),999)));
             }
             fw.close();
