@@ -82,7 +82,7 @@ class GreatestHits {
     static ArrayList<Artist> artists=new ArrayList<>();
     static ArrayList<Song> songs=new ArrayList<>();
     static HashMap<Integer,Song> songsById=new HashMap<>();
-    static int nrArtists=250;
+    static int nrArtists=500;
 
 
     static void InitNames() throws FileNotFoundException {
@@ -128,10 +128,12 @@ class GreatestHits {
     static String ArtistName()
     {
         String name;
+        boolean midName=false;
         if(ran.nextInt(2)==1) {
             int i=ran.nextInt(maleNames.size());
             name=capitalize(maleNames.get(i));
             if(ran.nextInt(5)==0) {
+                midName=true;
                 int j=ran.nextInt(maleNames.size());
                 name += " " + capitalize(maleNames.get(j));
             }
@@ -140,12 +142,16 @@ class GreatestHits {
             int i=ran.nextInt(femaleNames.size());
             name=capitalize(femaleNames.get(i));
             if(ran.nextInt(5)==0) {
+                midName=true;
                 int j=ran.nextInt(femaleNames.size());
                 name += " " + capitalize(femaleNames.get(j));
             }
         }
-        int i=ran.nextInt(lastNames.size());
-        name+=" "+capitalize(lastNames.get(i));
+        if(!midName && ran.nextInt(3)>0)
+        {
+            int i = ran.nextInt(lastNames.size());
+            name += " " + capitalize(lastNames.get(i));
+        }
         return name;
     }
 
