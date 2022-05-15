@@ -7,10 +7,14 @@ import java.io.File;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+
+// Artist class: contains the artist info
 class Artist {
     String name;
-    ArrayList<Song> songs = new ArrayList<>();
+    ArrayList<Song> songsReleased = new ArrayList<>();
+    //how popular the artist is. song popularity depends on this
     double popularity;
+    //how good their music is. song quality depends on this
     double quality;
     int ID;
     static Random ran = new Random();
@@ -22,6 +26,8 @@ class Artist {
         this.quality=ran.nextInt(100,1001)/100.0;
     }
 
+
+    //How likely is it that this artist will release a song this week?
     double songReleaseProb()
     {
         return ran.nextInt(101)/100.0;
@@ -32,26 +38,26 @@ class Artist {
 class Song {
     String name;
     static Random ran = new Random();
-    double decay;
+    double decay; //how quickly the song fan reception goes down
     double popularity;
-    double quality;
-    double fanReception;
-    static int totalID=0;
-    int ID;
-    int week;
-    double points;
+    double quality; // how popular the song is at first
+    double fanReception; // goes down in time
+    static int totalID=0; // which ID are we at?
+    int ID; // current ID
+    int week; //weeks since release
+    double points; // correlated to popularity * reception
     int artistId;
-    Artist artist;
+    Artist artist; // artist of the song
 
     Song(String name,int artistID)
     {
         this.name=name;
         this.artistId=artistID;
         this.artist=GreatestHits.artists.get(artistID);
-        this.decay=ran.nextInt(90,97)*0.01;
-        double offsetPopularity=ran.nextGaussian()/5;
+        this.decay=ran.nextInt(90,97)*0.01; //between 0.90 and 0.96
+        double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
         this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offsetPopularity)),4);
-        double offsetQuality=ran.nextGaussian();
+        double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
         this.quality=min(10,max(1,artist.quality+offsetQuality));
         this.fanReception=this.quality;
         totalID+=1;
@@ -59,6 +65,7 @@ class Song {
         this.week=0;
     }
 
+    //add one week of release to song
     void addWeek()
     {
         this.week++;
@@ -93,6 +100,7 @@ class GreatestHits {
     static int nrArtists=500;
 
 
+    //initialize artist and song titles by reading them from the file
     static void InitNames() throws FileNotFoundException {
         Scanner scanner;
 
@@ -121,19 +129,22 @@ class GreatestHits {
             titles.add(scanner.nextLine());
     }
 
+    //properly capitalize song titles
     static private String capitalize(String x)
     {
         return x.substring(0,1).toUpperCase()+
                 x.substring(1).toLowerCase();
     }
 
-    static private String pickTitle()
+    //pick a title at random
+    static private String pickSongTitle()
     {
         int i=ran.nextInt(titles.size());
         return titles.get(i);
     }
 
-    static String ArtistName()
+    //pick an artist name at random
+    static String pickArtistName()
     {
         String name;
         boolean midName=false;
@@ -163,6 +174,7 @@ class GreatestHits {
         return name;
     }
 
+    //add approximately nr number of songs. not exact due to probabilities
     static void addSongs(int nr)
     {
         double minSongProb=1.0*nr/nrArtists;
@@ -171,13 +183,14 @@ class GreatestHits {
             double prob=artist.songReleaseProb();
             if(prob<minSongProb)
             {
-                Song newSong=new Song(pickTitle(),artist.ID);
+                Song newSong=new Song(pickSongTitle(),artist.ID);
                 songs.add(newSong);
-                artist.songs.add(newSong);
+                artist.songsReleased.add(newSong);
             }
         }
     }
 
+    //format the chart entry properly for printing to file
     static String FormatChartEntry(int position,
                                    String artistName,
                                    String songName,
@@ -200,6 +213,7 @@ class GreatestHits {
                 position,artistName,songName,insideParen,points,weeks);
     }
 
+    //format the year-end entry properly for printing to file
     static String FormatYearEndEntry(int position,
                                      String artistName,
                                      String songName,
@@ -213,21 +227,23 @@ class GreatestHits {
         try {
             InitNames();
 
+            //read file
             File file=new File("charts");
             FileWriter fw = new FileWriter(file);
 
+            //add initial artists and songs
             HashSet<String> artistNames=new HashSet<>();
             for(int i=0;i<nrArtists;i++) {
-                String artistName=ArtistName();
+                String artistName= pickArtistName();
                 while(artistNames.contains(artistName))
-                    artistName=ArtistName();
+                    artistName= pickArtistName();
                 artistNames.add(artistName);
                 artists.add(new Artist(artistName,i));
             }
             addSongs(100);
 
+            //simulate the charts for a year
             HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
-
             for(int i=-49;i<=weeks;i++) {
                 for(Song song : songs) {
                     song.addWeek();
@@ -284,6 +300,7 @@ class GreatestHits {
                 }
             }
 
+            //simulating the year-end
             fw.write("Year End\n");
             TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
             for(Song song:songs)
