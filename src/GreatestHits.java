@@ -3,86 +3,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.io.File;
-
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-
-// Artist class: contains the artist info
-class Artist {
-    String name;
-    ArrayList<Song> songsReleased = new ArrayList<>();
-    //how popular the artist is. song popularity depends on this
-    double popularity;
-    //how good their music is. song quality depends on this
-    double quality;
-    int ID;
-    static Random ran = new Random();
-    Artist(String name,int ID)
-    {
-        this.name=name;
-        this.ID=ID;
-        this.popularity=ran.nextInt(0,911)/1000.0;
-        this.quality=ran.nextInt(100,1001)/100.0;
-    }
-
-
-    //How likely is it that this artist will release a song this week?
-    double songReleaseProb()
-    {
-        return ran.nextInt(101)/100.0;
-    }
-
-}
-
-class Song {
-    String name;
-    static Random ran = new Random();
-    double decay; //how quickly the song fan reception goes down
-    double popularity;
-    double quality; // how popular the song is at first
-    double fanReception; // goes down in time
-    static int totalID=0; // which ID are we at?
-    int ID; // current ID
-    int week; //weeks since release
-    double points; // correlated to popularity * reception
-    int artistId;
-    Artist artist; // artist of the song
-
-    Song(String name,int artistID)
-    {
-        this.name=name;
-        this.artistId=artistID;
-        this.artist=GreatestHits.artists.get(artistID);
-        this.decay=ran.nextInt(90,97)*0.01; //between 0.90 and 0.96
-        double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
-        this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offsetPopularity)),4);
-        double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
-        this.quality=min(10,max(1,artist.quality+offsetQuality));
-        this.fanReception=this.quality;
-        totalID+=1;
-        this.ID =totalID;
-        this.week=0;
-    }
-
-    //add one week of release to song
-    void addWeek()
-    {
-        this.week++;
-        //I have no idea how I came up with this
-        double hype=Math.pow(10,ran.nextInt(40,161)/100.0)
-                /Math.pow(10,1.6)/2.5*Math.pow(0.99,this.week-1);
-
-        this.popularity=1-(1-this.popularity)*(1-hype);
-        this.fanReception=this.fanReception*
-                (this.decay+ran.nextInt(21)*0.001);
-
-        //again, no clue
-        this.points=Math.pow(this.popularity*this.fanReception/10,1.5)*100;
-        this.points=Math.pow(this.points,1.5)/((100/this.points))*2;
-    }
-
-}
 
 class GreatestHits {
     static final int nrChartEntries =20;
@@ -183,7 +105,7 @@ class GreatestHits {
             double prob=artist.songReleaseProb();
             if(prob<minSongProb)
             {
-                Song newSong=new Song(pickSongTitle(),artist.ID);
+                Song newSong=new Song(pickSongTitle(),artist);
                 songs.add(newSong);
                 artist.songsReleased.add(newSong);
             }
@@ -228,7 +150,7 @@ class GreatestHits {
             InitNames();
 
             //read file
-            File file=new File("charts");
+            File file=new File("charts.txt");
             FileWriter fw = new FileWriter(file);
 
             //add initial artists and songs
@@ -286,7 +208,7 @@ class GreatestHits {
                     fw.write("\n");
                 }
 
-                songs.removeIf(x ->x.points<1);
+                songs.removeIf(x -> x.points<1);
                 addSongs(20);
                 if(i>=0)
                 {
