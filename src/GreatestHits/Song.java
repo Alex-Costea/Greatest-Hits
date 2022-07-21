@@ -1,11 +1,11 @@
-import java.util.Random;
+package GreatestHits;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static GreatestHits.GreatestHits.ran;
 
 class Song {
     String name;
-    static Random ran = new Random();
     double decay; //how quickly the song fan reception goes down
     double popularity;
     double quality; // how popular the song is at first

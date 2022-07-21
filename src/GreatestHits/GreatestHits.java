@@ -1,3 +1,5 @@
+package GreatestHits;
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +15,7 @@ class GreatestHits {
     static ArrayList<String> femaleNames = new ArrayList<>();
     static ArrayList<String> lastNames = new ArrayList<>();
     static ArrayList<String> titles = new ArrayList<>();
-    static Random ran = new Random();
+    public static Random ran = new Random();
     static HashMap<Integer,Double> fullPoints=new HashMap<>();
     static TreeMap<Integer,Integer> peaks=new TreeMap<>();
     static ArrayList<Artist> artists=new ArrayList<>();
@@ -214,9 +216,11 @@ class GreatestHits {
             //add initial artists and songs
             HashSet<String> artistNames=new HashSet<>();
             for(int i=0;i<nrArtists;i++) {
+                //make sure there are no duplicates
                 String artistName= pickArtistName();
                 while(artistNames.contains(artistName))
                     artistName= pickArtistName();
+
                 artistNames.add(artistName);
                 artists.add(new Artist(artistName,i));
             }

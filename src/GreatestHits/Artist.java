@@ -1,5 +1,7 @@
+package GreatestHits;
+
 import java.util.ArrayList;
-import java.util.Random;
+import static GreatestHits.GreatestHits.ran;
 
 // Artist class: contains the artist info
 class Artist {
@@ -10,7 +12,6 @@ class Artist {
     //how good their music is. song quality depends on this
     double quality;
     int ID;
-    static Random ran = new Random();
     Artist(String name,int ID)
     {
         this.name=name;
