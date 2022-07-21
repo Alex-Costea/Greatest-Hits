@@ -16,7 +16,6 @@ class MainClass {
     private static final ArrayList<String> lastNames = new ArrayList<>(); //list of family names
     private static final ArrayList<String> titles = new ArrayList<>(); //list of song titles
     public static Random ran = new Random(); // random number generator
-    //private static final HashMap<Integer,Double> fullPoints=new HashMap<>(); //for each song id, total nr of points
     private static final TreeMap<Integer,Integer> peaks=new TreeMap<>(); //peaks of songs
     private static final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
     private static final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
@@ -55,7 +54,7 @@ class MainClass {
             titles.add(scanner.nextLine());
     }
 
-    //properly capitalize song titles
+    //properly capitalize artist names
     static private String capitalize(String x)
     {
         return x.substring(0,1).toUpperCase()+
@@ -149,6 +148,7 @@ class MainClass {
                 position,artistName,songName,peak);
     }
 
+    //move to the next week
     static void nextWeek(int i) throws IOException {
         for(Song song : songs) {
             song.addWeek();
@@ -200,48 +200,51 @@ class MainClass {
         }
     }
 
+    private static void displayYearEnd() throws IOException {
+        fw.write("Year End\n");
+        TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
+        for(Song song:songs)
+            if(song.getFullPoints()>0)
+                fullPointsOrdered.put(song.getFullPoints(),song.ID);
+        NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
+        int i=0;
+        for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
+            i++;
+            if(i>40) break;
+            Song currentSong=songsById.get(entry.getValue());
+            fw.write(FormatYearEndEntry(i,
+                    artists.get(currentSong.artist.ID).name,
+                    currentSong.name,
+                    peaks.getOrDefault(entry.getValue(),999)));
+        }
+    }
+
+    private static void initSongs()
+    {
+        HashSet<String> artistNames=new HashSet<>();
+        for(int i=0;i<nrArtists;i++) {
+            //make sure there are no duplicates
+            String artistName= pickArtistName();
+            while(artistNames.contains(artistName))
+                artistName= pickArtistName();
+
+            artistNames.add(artistName);
+            artists.add(new Artist(artistName,i));
+        }
+        addSongs(100);
+    }
+
     public static void main(String[] args) {
         try {
             InitNames();
-
             //read file
             File file=new File("charts.txt");
             fw = new FileWriter(file);
-
-            //add initial artists and songs
-            HashSet<String> artistNames=new HashSet<>();
-            for(int i=0;i<nrArtists;i++) {
-                //make sure there are no duplicates
-                String artistName= pickArtistName();
-                while(artistNames.contains(artistName))
-                    artistName= pickArtistName();
-
-                artistNames.add(artistName);
-                artists.add(new Artist(artistName,i));
-            }
-            addSongs(100);
-
+            initSongs();
             //simulate the charts for a year
             for(int i=-49;i<=weeks;i++)
                 nextWeek(i);
-
-            //simulating the year-end
-            fw.write("Year End\n");
-            TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
-            for(Song song:songs)
-                if(song.getFullPoints()>0)
-                    fullPointsOrdered.put(song.getFullPoints(),song.ID);
-            NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
-            int i=0;
-            for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
-                i++;
-                if(i>40) break;
-                Song currentSong=songsById.get(entry.getValue());
-                fw.write(FormatYearEndEntry(i,
-                        artists.get(currentSong.artist.ID).name,
-                        currentSong.name,
-                        peaks.getOrDefault(entry.getValue(),999)));
-            }
+            displayYearEnd();
             fw.close();
         } catch (IOException e) {
             System.out.println("File reading/writing didn't work!");
