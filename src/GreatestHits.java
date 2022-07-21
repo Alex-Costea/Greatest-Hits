@@ -20,6 +20,8 @@ class GreatestHits {
     static ArrayList<Song> songs=new ArrayList<>();
     static HashMap<Integer,Song> songsById=new HashMap<>();
     static int nrArtists=500;
+    static HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
+    static FileWriter fw;
 
 
     //initialize artist and song titles by reading them from the file
@@ -145,13 +147,69 @@ class GreatestHits {
                 position,artistName,songName,peak);
     }
 
+    static void nextWeek(int i) throws IOException {
+        for(Song song : songs) {
+            song.addWeek();
+            if(!songsById.containsKey(song.ID))
+                songsById.put(song.ID,song);
+        }
+        TreeMap<Double,Song> sortedSongs =new TreeMap<>();
+        for (Song song : songs)
+            sortedSongs.put(song.points,song);
+        NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
+        int j=0;
+        if(i>0) {
+            fw.write("Week ");
+            fw.write(String.valueOf(i));
+            fw.write("\n");
+            for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
+                Song current = entry.getValue();
+                j++;
+                if (j <= nrChartEntries) {
+                    //format
+                    int lastPos;
+                    lastPos = lastWeekPos.getOrDefault(current.ID, -1);
+                    if(lastPos> nrChartEntries) lastPos=-1;
+                    fw.write(FormatChartEntry(j,
+                            artists.get(current.artistId).name,
+                            current.name,
+                            lastPos,
+                            (int)current.points,
+                            current.week,
+                            peaks.getOrDefault(current.ID,999)> nrChartEntries));
+                }
+
+                if (!fullPoints.containsKey(current.ID))
+                    fullPoints.put(current.ID, current.points);
+                else fullPoints.put(current.ID,
+                        fullPoints.get(current.ID) + current.points);
+
+                peaks.put(current.ID, min(peaks.getOrDefault(current.ID,999), j));
+            }
+            fw.write("\n");
+        }
+
+        songs.removeIf(x -> x.points<1);
+        addSongs(20);
+        if(i>=0)
+        {
+            lastWeekPos=new HashMap<>();
+            j=0;
+            for (Map.Entry<Double, Song> entry : songsList.entrySet())
+            {
+                j++;
+                lastWeekPos.put(entry.getValue().ID,j);
+            }
+        }
+    }
+
     public static void main(String[] args) {
         try {
             InitNames();
 
             //read file
             File file=new File("charts.txt");
-            FileWriter fw = new FileWriter(file);
+            fw = new FileWriter(file);
 
             //add initial artists and songs
             HashSet<String> artistNames=new HashSet<>();
@@ -165,62 +223,8 @@ class GreatestHits {
             addSongs(100);
 
             //simulate the charts for a year
-            HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
-            for(int i=-49;i<=weeks;i++) {
-                for(Song song : songs) {
-                    song.addWeek();
-                    if(!songsById.containsKey(song.ID))
-                        songsById.put(song.ID,song);
-                }
-                TreeMap<Double,Song> sortedSongs =new TreeMap<>();
-                for (Song song : songs)
-                    sortedSongs.put(song.points,song);
-                NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
-                int j=0;
-                if(i>0) {
-                    fw.write("Week ");
-                    fw.write(String.valueOf(i));
-                    fw.write("\n");
-                    for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
-                        Song current = entry.getValue();
-                        j++;
-                        if (j <= nrChartEntries) {
-                            //format
-                            int lastPos;
-                            lastPos = lastWeekPos.getOrDefault(current.ID, -1);
-                            if(lastPos> nrChartEntries) lastPos=-1;
-                            fw.write(FormatChartEntry(j,
-                                    artists.get(current.artistId).name,
-                                    current.name,
-                                    lastPos,
-                                    (int)current.points,
-                                    current.week,
-                                    peaks.getOrDefault(current.ID,999)> nrChartEntries));
-                        }
-
-                        if (!fullPoints.containsKey(current.ID))
-                            fullPoints.put(current.ID, current.points);
-                        else fullPoints.put(current.ID,
-                                fullPoints.get(current.ID) + current.points);
-
-                        peaks.put(current.ID, min(peaks.getOrDefault(current.ID,999), j));
-                    }
-                    fw.write("\n");
-                }
-
-                songs.removeIf(x -> x.points<1);
-                addSongs(20);
-                if(i>=0)
-                {
-                    lastWeekPos=new HashMap<>();
-                    j=0;
-                    for (Map.Entry<Double, Song> entry : songsList.entrySet())
-                    {
-                        j++;
-                        lastWeekPos.put(entry.getValue().ID,j);
-                    }
-                }
-            }
+            for(int i=-49;i<=weeks;i++)
+                nextWeek(i);
 
             //simulating the year-end
             fw.write("Year End\n");
@@ -241,7 +245,7 @@ class GreatestHits {
             }
             fw.close();
         } catch (IOException e) {
-            System.out.println("File reading didn't work!");
+            System.out.println("File reading/writing didn't work!");
         }
     }
 }
