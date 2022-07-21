@@ -2,25 +2,24 @@ package GreatestHits;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static GreatestHits.GreatestHits.ran;
+import static GreatestHits.MainClass.ran;
 
 class Song {
-    String name;
-    double decay; //how quickly the song fan reception goes down
-    double popularity;
-    double quality; // how popular the song is at first
-    double fanReception; // goes down in time
-    static int totalID=0; // which ID are we at?
-    int ID; // current ID
-    int week; //weeks since release
-    double points; // correlated to popularity * reception
-    int artistId;
-    Artist artist; // artist of the song
+    public String name;
+    private final double decay; //how quickly the song fan reception goes down
+    private double popularity;
+    private final double quality; // how popular the song is at first
+    private double fanReception; // goes down in time
+    private static int totalID=0; // which ID are we at?
+    public int ID; // current ID
+    public int week; //weeks since release
+    public double points; // correlated to popularity * reception
+    public Artist artist; // artist of the song
+    private double fullPoints=0;
 
     Song(String name,Artist artist)
     {
         this.name=name;
-        this.artistId=artist.ID;
         this.artist=artist;
         this.decay=ran.nextInt(90,97)*0.01; //between 0.90 and 0.96
         double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
@@ -34,7 +33,7 @@ class Song {
     }
 
     //add one week of release to song
-    void addWeek()
+    public void addWeek()
     {
         this.week++;
         //I have no idea how I came up with this
@@ -50,4 +49,12 @@ class Song {
         this.points=Math.pow(this.points,1.5)/((100/this.points))*2;
     }
 
+    public void addFullPoints() {
+        fullPoints+=points;
+    }
+
+    public double getFullPoints()
+    {
+        return fullPoints;
+    }
 }

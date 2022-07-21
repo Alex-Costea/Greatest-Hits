@@ -8,22 +8,22 @@ import java.io.File;
 import static java.lang.Math.min;
 
 
-class GreatestHits {
-    static final int nrChartEntries =20;
-    static final int weeks=52;
-    static ArrayList<String> maleNames = new ArrayList<>();
-    static ArrayList<String> femaleNames = new ArrayList<>();
-    static ArrayList<String> lastNames = new ArrayList<>();
-    static ArrayList<String> titles = new ArrayList<>();
-    public static Random ran = new Random();
-    static HashMap<Integer,Double> fullPoints=new HashMap<>();
-    static TreeMap<Integer,Integer> peaks=new TreeMap<>();
-    static ArrayList<Artist> artists=new ArrayList<>();
-    static ArrayList<Song> songs=new ArrayList<>();
-    static HashMap<Integer,Song> songsById=new HashMap<>();
-    static int nrArtists=500;
-    static HashMap<Integer,Integer> lastWeekPos = new HashMap<>();
-    static FileWriter fw;
+class MainClass {
+    private static final int nrChartEntries =20; //chart entries to be shown every week
+    private static final int weeks=52; //number of weeks shown
+    private static final ArrayList<String> maleNames = new ArrayList<>(); //list of male names
+    private static final ArrayList<String> femaleNames = new ArrayList<>(); //list of female names
+    private static final ArrayList<String> lastNames = new ArrayList<>(); //list of family names
+    private static final ArrayList<String> titles = new ArrayList<>(); //list of song titles
+    public static Random ran = new Random(); // random number generator
+    //private static final HashMap<Integer,Double> fullPoints=new HashMap<>(); //for each song id, total nr of points
+    private static final TreeMap<Integer,Integer> peaks=new TreeMap<>(); //peaks of songs
+    private static final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
+    private static final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
+    private static final HashMap<Integer,Song> songsById=new HashMap<>(); //get a song by ID
+    private static final int nrArtists=500; //total number of songs
+    private static HashMap<Integer,Integer> lastWeekPos = new HashMap<>(); //positions last week
+    private static FileWriter fw; //writing results to file
 
 
     //initialize artist and song titles by reading them from the file
@@ -165,28 +165,23 @@ class GreatestHits {
             fw.write(String.valueOf(i));
             fw.write("\n");
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
-                Song current = entry.getValue();
+                Song currentSong = entry.getValue();
                 j++;
                 if (j <= nrChartEntries) {
                     //format
                     int lastPos;
-                    lastPos = lastWeekPos.getOrDefault(current.ID, -1);
+                    lastPos = lastWeekPos.getOrDefault(currentSong.ID, -1);
                     if(lastPos> nrChartEntries) lastPos=-1;
                     fw.write(FormatChartEntry(j,
-                            artists.get(current.artistId).name,
-                            current.name,
+                            currentSong.artist.name,
+                            currentSong.name,
                             lastPos,
-                            (int)current.points,
-                            current.week,
-                            peaks.getOrDefault(current.ID,999)> nrChartEntries));
+                            (int)currentSong.points,
+                            currentSong.week,
+                            peaks.getOrDefault(currentSong.ID,999)> nrChartEntries));
                 }
-
-                if (!fullPoints.containsKey(current.ID))
-                    fullPoints.put(current.ID, current.points);
-                else fullPoints.put(current.ID,
-                        fullPoints.get(current.ID) + current.points);
-
-                peaks.put(current.ID, min(peaks.getOrDefault(current.ID,999), j));
+                currentSong.addFullPoints();
+                peaks.put(currentSong.ID, min(peaks.getOrDefault(currentSong.ID,999), j));
             }
             fw.write("\n");
         }
@@ -234,17 +229,17 @@ class GreatestHits {
             fw.write("Year End\n");
             TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
             for(Song song:songs)
-                if(fullPoints.containsKey(song.ID))
-                    fullPointsOrdered.put(fullPoints.get(song.ID),song.ID);
+                if(song.getFullPoints()>0)
+                    fullPointsOrdered.put(song.getFullPoints(),song.ID);
             NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
             int i=0;
             for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
                 i++;
                 if(i>40) break;
-                Song current=songsById.get(entry.getValue());
+                Song currentSong=songsById.get(entry.getValue());
                 fw.write(FormatYearEndEntry(i,
-                        artists.get(current.artistId).name,
-                        current.name,
+                        artists.get(currentSong.artist.ID).name,
+                        currentSong.name,
                         peaks.getOrDefault(entry.getValue(),999)));
             }
             fw.close();

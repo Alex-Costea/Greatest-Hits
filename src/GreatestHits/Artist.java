@@ -1,17 +1,17 @@
 package GreatestHits;
 
 import java.util.ArrayList;
-import static GreatestHits.GreatestHits.ran;
+import static GreatestHits.MainClass.ran;
 
 // Artist class: contains the artist info
 class Artist {
-    String name;
-    ArrayList<Song> songsReleased = new ArrayList<>();
+    public String name;
+    public ArrayList<Song> songsReleased = new ArrayList<>();
     //how popular the artist is. song popularity depends on this
-    double popularity;
+    public double popularity;
     //how good their music is. song quality depends on this
-    double quality;
-    int ID;
+    public double quality;
+    public int ID;
     Artist(String name,int ID)
     {
         this.name=name;
