@@ -1,7 +1,7 @@
 package GreatestHits;
 
 import java.util.ArrayList;
-import static GreatestHits.MainClass.ran;
+import static GreatestHits.ChartSimulator.ran;
 
 // Artist class: contains the artist info
 class Artist {

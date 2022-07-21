@@ -2,13 +2,12 @@ package GreatestHits;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static GreatestHits.MainClass.ran;
+import static GreatestHits.ChartSimulator.ran;
 
 class Song {
     public String name;
     private final double decay; //how quickly the song fan reception goes down
     private double popularity;
-    private final double quality; // how popular the song is at first
     private double fanReception; // goes down in time
     private static int totalID=0; // which ID are we at?
     public int ID; // current ID
@@ -25,8 +24,7 @@ class Song {
         double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
         this.popularity=Math.pow(min(0.91,max(0,artist.popularity+offsetPopularity)),4);
         double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
-        this.quality=min(10,max(1,artist.quality+offsetQuality));
-        this.fanReception=this.quality;
+        this.fanReception= min(10, max(1, artist.quality + offsetQuality));
         totalID+=1;
         this.ID =totalID;
         this.week=0;
