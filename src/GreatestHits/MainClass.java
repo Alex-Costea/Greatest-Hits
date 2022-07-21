@@ -23,10 +23,10 @@ class MainClass {
     private static final int nrArtists=500; //total number of songs
     private static HashMap<Integer,Integer> lastWeekPos = new HashMap<>(); //positions last week
     private static FileWriter fw; //writing results to file
-
+    private static int currentWeek=-49;
 
     //initialize artist and song titles by reading them from the file
-    static void InitNames() throws FileNotFoundException {
+    static private void InitNames() throws FileNotFoundException {
         Scanner scanner;
 
         //Male
@@ -69,7 +69,7 @@ class MainClass {
     }
 
     //pick an artist name at random
-    static String pickArtistName()
+    static private String pickArtistName()
     {
         String name;
         boolean midName=false;
@@ -100,7 +100,7 @@ class MainClass {
     }
 
     //add approximately nr number of songs. not exact due to probabilities
-    static void addSongs(int nr)
+    static private void addSongs(int nr)
     {
         double minSongProb=1.0*nr/nrArtists;
         for(Artist artist:artists)
@@ -116,7 +116,7 @@ class MainClass {
     }
 
     //format the chart entry properly for printing to file
-    static String FormatChartEntry(int position,
+    static private String FormatChartEntry(int position,
                                    String artistName,
                                    String songName,
                                    int lastWeek,
@@ -139,7 +139,7 @@ class MainClass {
     }
 
     //format the year-end entry properly for printing to file
-    static String FormatYearEndEntry(int position,
+    static private String FormatYearEndEntry(int position,
                                      String artistName,
                                      String songName,
                                      int peak)
@@ -148,8 +148,8 @@ class MainClass {
                 position,artistName,songName,peak);
     }
 
-    //move to the next week
-    static void nextWeek(int i) throws IOException {
+    //move charts to the next week
+    static public void nextWeek() throws IOException {
         for(Song song : songs) {
             song.addWeek();
             if(!songsById.containsKey(song.ID))
@@ -160,9 +160,9 @@ class MainClass {
             sortedSongs.put(song.points,song);
         NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
         int j=0;
-        if(i>0) {
+        if(currentWeek>0) {
             fw.write("Week ");
-            fw.write(String.valueOf(i));
+            fw.write(String.valueOf(currentWeek));
             fw.write("\n");
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
@@ -185,10 +185,9 @@ class MainClass {
             }
             fw.write("\n");
         }
-
         songs.removeIf(x -> x.points<1);
         addSongs(20);
-        if(i>=0)
+        if(currentWeek>=0)
         {
             lastWeekPos=new HashMap<>();
             j=0;
@@ -242,8 +241,8 @@ class MainClass {
             fw = new FileWriter(file);
             initSongs();
             //simulate the charts for a year
-            for(int i=-49;i<=weeks;i++)
-                nextWeek(i);
+            for(currentWeek=-49;currentWeek<=weeks;currentWeek++)
+                nextWeek();
             displayYearEnd();
             fw.close();
         } catch (IOException e) {
