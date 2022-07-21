@@ -22,7 +22,7 @@ class ChartSimulator {
     private final HashMap<Integer,Song> songsById=new HashMap<>(); //get a song by ID
     private HashMap<Integer,Integer> lastWeekPos = new HashMap<>(); //positions last week
     private final FileWriter fw; //writing results to file
-    private int currentWeek;
+    private int currentWeek=-50;
 
     //initialize artist and song titles by reading them from the file
     private void InitNames() throws FileNotFoundException {
@@ -149,6 +149,7 @@ class ChartSimulator {
 
     //move charts to the next week
     public void nextWeek() throws IOException {
+        currentWeek++;
         for(Song song : songs) {
             song.addWeek();
             if(!songsById.containsKey(song.ID))
@@ -196,7 +197,6 @@ class ChartSimulator {
                 lastWeekPos.put(entry.getValue().ID,j);
             }
         }
-        currentWeek++;
     }
 
     public void displayYearEnd() throws IOException {
@@ -244,7 +244,7 @@ class ChartSimulator {
         fw = new FileWriter(file);
         initSongs();
         //simulate the charts for a year
-        for(currentWeek=-49;currentWeek<=0;currentWeek++)
+        for(int i=-50;i<0;i++)
             nextWeek();
     }
 
