@@ -109,7 +109,7 @@ class ChartSimulator {
             {
                 Song newSong=new Song(pickSongTitle(),artist);
                 songs.add(newSong);
-                artist.songsReleased.add(newSong);
+                artist.getSongsReleased().add(newSong);
             }
         }
     }
@@ -152,12 +152,12 @@ class ChartSimulator {
         currentWeek++;
         for(Song song : songs) {
             song.addWeek();
-            if(!songsById.containsKey(song.ID))
-                songsById.put(song.ID,song);
+            if(!songsById.containsKey(song.getID()))
+                songsById.put(song.getID(),song);
         }
         TreeMap<Double,Song> sortedSongs =new TreeMap<>();
         for (Song song : songs)
-            sortedSongs.put(song.points,song);
+            sortedSongs.put(song.getPoints(),song);
         NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
         int j=0;
         if(currentWeek>0) {
@@ -170,22 +170,22 @@ class ChartSimulator {
                 if (j <= nrChartEntries) {
                     //format
                     int lastPos;
-                    lastPos = lastWeekPos.getOrDefault(currentSong.ID, -1);
+                    lastPos = lastWeekPos.getOrDefault(currentSong.getID(), -1);
                     if(lastPos> nrChartEntries) lastPos=-1;
                     fw.write(FormatChartEntry(j,
-                            currentSong.artist.name,
-                            currentSong.name,
+                            currentSong.getArtist().getName(),
+                            currentSong.getName(),
                             lastPos,
-                            (int)currentSong.points,
-                            currentSong.week,
-                            peaks.getOrDefault(currentSong.ID,999)> nrChartEntries));
+                            (int) currentSong.getPoints(),
+                            currentSong.getWeek(),
+                            peaks.getOrDefault(currentSong.getID(),999)> nrChartEntries));
                 }
                 currentSong.addFullPoints();
-                peaks.put(currentSong.ID, min(peaks.getOrDefault(currentSong.ID,999), j));
+                peaks.put(currentSong.getID(), min(peaks.getOrDefault(currentSong.getID(),999), j));
             }
             fw.write("\n");
         }
-        songs.removeIf(x -> x.points<1);
+        songs.removeIf(x -> x.getPoints() <1);
         addSongs(20);
         if(currentWeek>=0)
         {
@@ -194,7 +194,7 @@ class ChartSimulator {
             for (Map.Entry<Double, Song> entry : songsList.entrySet())
             {
                 j++;
-                lastWeekPos.put(entry.getValue().ID,j);
+                lastWeekPos.put(entry.getValue().getID(),j);
             }
         }
     }
@@ -204,7 +204,7 @@ class ChartSimulator {
         TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
         for(Song song:songs)
             if(song.getFullPoints()>0)
-                fullPointsOrdered.put(song.getFullPoints(),song.ID);
+                fullPointsOrdered.put(song.getFullPoints(), song.getID());
         NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
         int i=0;
         for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
@@ -212,8 +212,8 @@ class ChartSimulator {
             if(i>40) break;
             Song currentSong=songsById.get(entry.getValue());
             fw.write(FormatYearEndEntry(i,
-                    artists.get(currentSong.artist.ID).name,
-                    currentSong.name,
+                    artists.get(currentSong.getArtist().getID()).getName(),
+                    currentSong.getName(),
                     peaks.getOrDefault(entry.getValue(),999)));
         }
     }
