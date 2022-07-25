@@ -34,15 +34,16 @@ class Song {
     public void addWeek()
     {
         this.setWeek(this.getWeek() + 1);
-        //I have no idea how I came up with this
+        //Complex math formula for setting hype
         double hype=Math.pow(10,ran.nextInt(40,161)/100.0)
                 /Math.pow(10,1.6)/2.5*Math.pow(0.99, this.getWeek() -1);
-
+        //Higher hype leads to a bigger increase of popularity
         this.popularity=1-(1-this.popularity)*(1-hype);
+        //Reception decreases as people get sick of the song
         this.fanReception=this.fanReception*
                 (this.decay+ran.nextInt(21)*0.001);
 
-        //again, no clue
+        //formula for setting points based on popularity and fan reception
         this.setPoints(Math.pow(this.popularity*this.fanReception/10,1.5)*100);
         this.setPoints(Math.pow(this.getPoints(),1.5)/((100/ this.getPoints()))*2);
     }
