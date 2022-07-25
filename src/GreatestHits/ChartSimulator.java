@@ -98,20 +98,28 @@ class ChartSimulator {
         return name;
     }
 
+    int sumSongsReleased=0;
+    int nrTimesSongsReleased=0;
     //add approximately nr number of songs. not exact due to probabilities
     private void addSongs(int nr)
     {
-        double minSongProb=1.0*nr/nrArtists;
+        double minSongProb=1-1.0*nr/nrArtists;
+        int songsReleased=0;
         for(Artist artist:artists)
         {
-            double prob=artist.songReleaseProb();
-            if(prob<minSongProb)
+            double prob;
+            prob=artist.songReleaseProb(currentWeek);
+            if(prob>minSongProb)
             {
+                songsReleased++;
                 Song newSong=new Song(pickSongTitle(),artist);
                 songs.add(newSong);
                 artist.getSongsReleased().add(newSong);
             }
         }
+        //System.out.println(nr+" "+songsReleased);
+        sumSongsReleased+=songsReleased;
+        nrTimesSongsReleased+=1;
     }
 
     //format the chart entry properly for printing to file
@@ -234,6 +242,7 @@ class ChartSimulator {
     }
 
     public void closeWriter() throws IOException {
+        //System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
         fw.close();
     }
 

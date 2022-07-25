@@ -2,6 +2,7 @@ package GreatestHits;
 
 import java.util.ArrayList;
 import static GreatestHits.ChartSimulator.ran;
+import static java.lang.Math.*;
 
 // Artist class: contains the artist info
 class Artist {
@@ -12,6 +13,8 @@ class Artist {
     //how good their music is. song quality depends on this
     private double quality;
     private int ID;
+    private final double releaseOffset= ran.nextDouble(Math.PI*2);
+
     Artist(String name,int ID)
     {
         this.setName(name);
@@ -22,10 +25,14 @@ class Artist {
 
 
     //How likely is it that this artist will release a song this week?
-    //TODO: should be improved eventually, more than just a rng
-    double songReleaseProb()
+    //Assumed to be evenly distributed from 0 to 1, although it is not strictly speaking
+    double songReleaseProb(int week)
     {
-        return ran.nextInt(101)/100.0;
+        //TODO: Improve formula
+        double weekLikelihood = sin(week / 8.0 + releaseOffset)/2.57;
+        double finalResult=min(1,max(0,ran.nextGaussian(0.5,0.1)+weekLikelihood));
+        //System.out.println(week/8.0+" "+releaseOffset+" "+ weekLikelihood+" "+finalResult);
+        return finalResult;
     }
 
     public String getName() {
