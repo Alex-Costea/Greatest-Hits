@@ -14,6 +14,7 @@ class Artist {
     private double quality;
     private int ID;
     private final double releaseOffset= ran.nextDouble(Math.PI*2);
+    private final double releaseSchedule=ran.nextDouble(5.0,10.0);
 
     Artist(String name,int ID)
     {
@@ -29,10 +30,8 @@ class Artist {
     double songReleaseProb(int week)
     {
         //TODO: Improve formula
-        double weekLikelihood = sin(week / 8.0 + releaseOffset)/2.57;
-        double finalResult=min(1,max(0,ran.nextGaussian(0.5,0.1)+weekLikelihood));
-        //System.out.println(week/8.0+" "+releaseOffset+" "+ weekLikelihood+" "+finalResult);
-        return finalResult;
+        double weekLikelihood = sin(week / releaseSchedule + releaseOffset)/2.57;
+        return min(1,max(0,ran.nextGaussian(0.5,0.1)+weekLikelihood));
     }
 
     public String getName() {

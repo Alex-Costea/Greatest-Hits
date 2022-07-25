@@ -242,7 +242,7 @@ class ChartSimulator {
     }
 
     public void closeWriter() throws IOException {
-        //System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
+        System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
         fw.close();
     }
 
