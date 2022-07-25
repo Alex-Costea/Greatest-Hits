@@ -54,7 +54,7 @@ class ChartSimulator {
     }
 
     //properly capitalize artist names
-    private String capitalize(String x)
+    private static String capitalize(String x)
     {
         return x.substring(0,1).toUpperCase()+
                 x.substring(1).toLowerCase();
@@ -239,12 +239,11 @@ class ChartSimulator {
 
     public ChartSimulator() throws IOException {
         InitNames();
-        //read file
         File file=new File("charts.txt");
         fw = new FileWriter(file);
         initSongs();
-        //simulate the charts for a year
-        for(int i=-50;i<0;i++)
+        //simulate 50 weeks before the first week, as to properly populate the charts
+        for(int i=0;i<50;i++)
             nextWeek();
     }
 
