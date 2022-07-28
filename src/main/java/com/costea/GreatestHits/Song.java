@@ -1,8 +1,8 @@
-package GreatestHits;
+package com.costea.GreatestHits;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static GreatestHits.ChartSimulator.ran;
+import static com.costea.GreatestHits.ChartSimulator.ran;
 
 class Song {
     private String name;

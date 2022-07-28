@@ -1,7 +1,7 @@
-package GreatestHits;
+package com.costea.GreatestHits;
 
 import java.util.ArrayList;
-import static GreatestHits.ChartSimulator.ran;
+import static com.costea.GreatestHits.ChartSimulator.ran;
 import static java.lang.Math.*;
 
 // Artist class: contains the artist info

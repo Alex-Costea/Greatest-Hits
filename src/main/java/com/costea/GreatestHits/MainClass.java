@@ -1,6 +1,7 @@
-package GreatestHits;
+package com.costea.GreatestHits;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MainClass {
     public static void main(String[] args) {
@@ -14,6 +15,7 @@ public class MainClass {
         catch(IOException ex)
         {
             System.out.println("File reading/writing didn't work!");
+            ex.printStackTrace();
         }
     }
 }

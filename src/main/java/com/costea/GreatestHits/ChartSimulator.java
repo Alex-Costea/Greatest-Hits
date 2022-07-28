@@ -1,10 +1,10 @@
-package GreatestHits;
+package com.costea.GreatestHits;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.io.File;
+
 import static java.lang.Math.min;
 
 
@@ -24,30 +24,40 @@ class ChartSimulator {
     private final FileWriter fw; //writing results to file
     private int currentWeek=-50;
 
+    private File getFileFromResources(String fileName) throws IOException {
+        try {
+            return new File(getClass().getResource(fileName).getFile());
+        }
+        catch(NullPointerException ex)
+        {
+            throw new IOException();
+        }
+    }
+
     //initialize artist and song titles by reading them from the file
-    private void InitNames() throws FileNotFoundException {
+    private void InitNames() throws IOException {
         Scanner scanner;
 
         //Male
-        File maleFile=new File("male");
+        File maleFile=getFileFromResources("male");
         scanner = new Scanner(maleFile);
         while (scanner.hasNextLine())
             maleNames.add(scanner.nextLine());
 
         //Female
-        File femaleFile=new File("female");
+        File femaleFile=getFileFromResources("female");
         scanner = new Scanner(femaleFile);
         while (scanner.hasNextLine())
             femaleNames.add(scanner.nextLine());
 
         //Last
-        File lastFile=new File("last");
+        File lastFile=getFileFromResources("last");
         scanner = new Scanner(lastFile);
         while (scanner.hasNextLine())
             lastNames.add(scanner.nextLine());
 
         //Titles
-        File titlesFile=new File("titles");
+        File titlesFile=getFileFromResources("titles");
         scanner = new Scanner(titlesFile);
         while (scanner.hasNextLine())
             titles.add(scanner.nextLine());
@@ -248,7 +258,7 @@ class ChartSimulator {
 
     public ChartSimulator() throws IOException {
         InitNames();
-        File file=new File("charts.txt");
+        File file=getFileFromResources("charts.txt");
         fw = new FileWriter(file);
         initSongs();
         //simulate 50 weeks before the first week, as to properly populate the charts
