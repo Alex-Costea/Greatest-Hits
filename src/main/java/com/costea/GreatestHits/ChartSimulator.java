@@ -23,6 +23,11 @@ class ChartSimulator {
     private HashMap<Integer,Integer> lastWeekPos = new HashMap<>(); //positions last week
     private final FileWriter fw; //writing results to file
     private int currentWeek=-50;
+    private ArrayList<ChartEntry> currentChartEntries;
+
+    public ArrayList<ChartEntry> getCurrentChartEntries() {
+        return currentChartEntries;
+    }
 
     private File getFileFromResources(String fileName) throws IOException {
         try {
@@ -133,14 +138,13 @@ class ChartSimulator {
     }
 
     //format the chart entry properly for printing to file
-    private String FormatChartEntry(int position,
-                                   String artistName,
-                                   String songName,
-                                   int lastWeek,
-                                   int points,
-                                   int weeks,
-                                   boolean newAppearance)
-    {
+    private void addChartEntry(int position,
+                                 String artistName,
+                                 String songName,
+                                 int lastWeek,
+                                 int points,
+                                 int weeks,
+                                 boolean newAppearance) throws IOException {
         String insideParen;
         if(lastWeek==-1 && newAppearance)
             insideParen="new";
@@ -151,8 +155,9 @@ class ChartSimulator {
         else if(lastWeek>position)
             insideParen=String.format("+%d",lastWeek-position);
         else insideParen=String.format("%d",lastWeek-position);
-        return String.format("#%d %s -- %s (%s) (points: %d; week: %d)\n",
-                position,artistName,songName,insideParen,points,weeks);
+        String format="#%d %s -- %s (%s) (points: %d; week: %d)\n";
+        currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
+        fw.write(String.format(format,position,artistName,songName,insideParen,points,weeks));
     }
 
     //format the year-end entry properly for printing to file
@@ -182,6 +187,7 @@ class ChartSimulator {
             fw.write("Week ");
             fw.write(String.valueOf(currentWeek));
             fw.write("\n");
+            currentChartEntries=new ArrayList<>();
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
                 j++;
@@ -190,13 +196,13 @@ class ChartSimulator {
                     int lastPos;
                     lastPos = lastWeekPos.getOrDefault(currentSong.getID(), -1);
                     if(lastPos> nrChartEntries) lastPos=-1;
-                    fw.write(FormatChartEntry(j,
-                            currentSong.getArtist().getName(),
-                            currentSong.getName(),
-                            lastPos,
-                            (int) currentSong.getPoints(),
-                            currentSong.getWeek(),
-                            peaks.getOrDefault(currentSong.getID(),999)> nrChartEntries));
+                    addChartEntry(j,
+                        currentSong.getArtist().getName(),
+                        currentSong.getName(),
+                        lastPos,
+                        (int) currentSong.getPoints(),
+                        currentSong.getWeek(),
+                        peaks.getOrDefault(currentSong.getID(),999)> nrChartEntries);
                 }
                 currentSong.addFullPoints();
                 peaks.put(currentSong.getID(), min(peaks.getOrDefault(currentSong.getID(),999), j));

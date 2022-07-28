@@ -8,6 +8,7 @@ public class GreatestHitsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GreatestHitsApplication.class, args);
+		MainClass.main(args);
 	}
 
 }
