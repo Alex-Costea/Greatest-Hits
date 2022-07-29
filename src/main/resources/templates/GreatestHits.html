@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Greatest Hits!</title>
+</head>
+<body>
+<table>
+    <h1 th:inline="text">Week [[${chart.week}]]</h1>
+    <tr>
+        <th>Position</th>
+        <th>Artist Name</th>
+        <th>Song Name</th>
+        <th>±</th>
+        <th>Points</th>
+        <th>Weeks</th>
+    </tr>
+    <tr th:each="entry:${chart.chartEntries}">
+        <td th:text="${entry.position}">0</td>
+        <td th:text="${entry.artistName}">N/A</td>
+        <td th:text="${entry.songName}">N/A</td>
+        <td th:text="${entry.insideParam}">=</td>
+        <td th:text="${entry.points}">0</td>
+        <td th:text="${entry.weeks}">0</td>
+    </tr>
+</table>
+</body>
+</html>
