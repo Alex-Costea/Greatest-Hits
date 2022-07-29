@@ -25,8 +25,8 @@ class ChartSimulator {
     private int currentWeek=-50;
     private ArrayList<ChartEntry> currentChartEntries;
 
-    public ArrayList<ChartEntry> getCurrentChartEntries() {
-        return currentChartEntries;
+    public Chart getCurrentChart() {
+        return new Chart(currentWeek,currentChartEntries);
     }
 
     private File getFileFromResources(String fileName) throws IOException {

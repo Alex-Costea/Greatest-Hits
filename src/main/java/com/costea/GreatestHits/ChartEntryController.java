@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static com.costea.GreatestHits.MainClass.chartSimulator;
 
 @Controller
-@RequestMapping("/entries")
+@RequestMapping("/GreatestHits")
 public class ChartEntryController {
 
     @GetMapping()
     public String getAllChartEntries(Model model){
-        model.addAttribute("entries", chartSimulator.getCurrentChartEntries());
-        return "entries";
+        model.addAttribute("entries", chartSimulator.getCurrentChart().getChartEntries());
+        return "GreatestHits";
     }
 }
