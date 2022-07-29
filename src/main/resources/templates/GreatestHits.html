@@ -6,7 +6,7 @@
 </head>
 <body>
 <table>
-    <h1 th:inline="text">Week [[${entries.week}]]</h1>
+    <h1 th:inline="text">Week [[${chart.week}]]</h1>
     <tr>
         <th>Position</th>
         <th>Artist Name</th>
@@ -15,7 +15,7 @@
         <th>Points</th>
         <th>Weeks</th>
     </tr>
-    <tr th:each="entry:${entries.chartEntries}">
+    <tr th:each="entry:${chart.chartEntries}">
         <td th:text="${entry.position}">0</td>
         <td th:text="${entry.artistName}">N/A</td>
         <td th:text="${entry.songName}">N/A</td>
