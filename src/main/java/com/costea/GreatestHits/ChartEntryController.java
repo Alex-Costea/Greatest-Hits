@@ -12,8 +12,8 @@ import static com.costea.GreatestHits.MainClass.chartSimulator;
 public class ChartEntryController {
 
     @GetMapping()
-    public String getAllChartEntries(Model model){
-        model.addAttribute("entries", chartSimulator.getCurrentChart().getChartEntries());
+    public String getChartEntries(Model model){
+        model.addAttribute("entries", chartSimulator.getCurrentChart());
         return "GreatestHits";
     }
 }
