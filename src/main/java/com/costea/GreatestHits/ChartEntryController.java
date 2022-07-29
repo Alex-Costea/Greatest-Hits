@@ -13,7 +13,7 @@ public class ChartEntryController {
 
     @GetMapping()
     public String getAllChartEntries(Model model){
-        model.addAttribute("entries", chartSimulator.getCurrentChartEntries());
+        model.addAttribute("entries", chartSimulator.getCurrentChart().getChartEntries());
         return "entries";
     }
 }
