@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static com.costea.GreatestHits.MainClass.chartSimulator;
 
 @Controller
-@RequestMapping("/entries")
+@RequestMapping()
 public class ChartEntryController {
 
     @GetMapping()
