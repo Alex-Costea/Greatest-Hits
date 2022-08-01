@@ -130,7 +130,8 @@ class ChartSimulator {
                                         int lastWeek,
                                         int points,
                                         int weeks,
-                                        boolean newAppearance) {
+                                        boolean newAppearance,
+                                        int peak) {
         String insideParen;
         if(lastWeek==-1 && newAppearance)
             insideParen="new";
@@ -141,8 +142,7 @@ class ChartSimulator {
         else if(lastWeek>position)
             insideParen=String.format("+%d",lastWeek-position);
         else insideParen=String.format("%d",lastWeek-position);
-        return new ChartEntry(position,artistName,songName,insideParen,points,weeks);
-        //currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
+        return new ChartEntry(position,artistName,songName,insideParen,points,weeks,peak);
     }
 
     //format the year-end entry properly for printing to file
@@ -170,6 +170,8 @@ class ChartSimulator {
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
                 j++;
+                currentSong.setPeak(min(currentSong.getPeak(),j));
+                currentSong.addFullPoints();
                 if (j <= nrChartEntries) {
                     //format
                     int lastPos = currentSong.getCurrentPosition();
@@ -180,10 +182,9 @@ class ChartSimulator {
                         lastPos,
                         (int) currentSong.getPoints(),
                         currentSong.getWeek(),
-                            currentSong.getCurrentPosition() > nrChartEntries));
+          currentSong.getCurrentPosition() > nrChartEntries,
+                        currentSong.getPeak()));
                 }
-                currentSong.addFullPoints();
-                currentSong.setPeak(min(currentSong.getPeak(),j));
             }
             allCharts.add(new Chart(currentWeek,currentChartEntries));
         }

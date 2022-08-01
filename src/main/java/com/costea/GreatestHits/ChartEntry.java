@@ -7,6 +7,15 @@ public class ChartEntry {
     private String insideParam;
     private int points;
     private int weeks;
+    private int peak;
+
+    public int getPeak() {
+        return peak;
+    }
+
+    public void setPeak(int peak) {
+        this.peak = peak;
+    }
 
     public int getPosition() {
         return position;
@@ -57,15 +66,16 @@ public class ChartEntry {
     }
 
     public ChartEntry() {
-        this(0,"N/A","N/A","=",0,0);
+        this(0,"N/A","N/A","=",0,0,0);
     }
 
-    public ChartEntry(int position, String artistName, String songName, String insideParam, int points, int weeks) {
+    public ChartEntry(int position, String artistName, String songName, String insideParam, int points, int weeks,int peak) {
         this.position = position;
         this.artistName = artistName;
         this.songName = songName;
         this.insideParam = insideParam;
         this.points = points;
         this.weeks = weeks;
+        this.peak=peak;
     }
 }

@@ -15,6 +15,7 @@
                 <th>Song Name</th>
                 <th>±</th>
                 <th>Points</th>
+                <th>Peak</th>
                 <th>Weeks</th>
             </tr>
             <tr th:each="entry:${currentChart.chartEntries}">
@@ -23,6 +24,7 @@
                 <td th:text="${entry.songName}">N/A</td>
                 <td th:text="${entry.insideParam}">=</td>
                 <td th:text="${entry.points}">0</td>
+                <td th:text="${entry.peak}">0</td>
                 <td th:text="${entry.weeks}">0</td>
             </tr>
         </table>

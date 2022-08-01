@@ -30,6 +30,7 @@ public class GreatestHitsApplication {
 			if(args.length>0 && args[0].equals("init"))
 			{
 				chartSimulator = new ChartSimulator();
+				for(int i=1;i<=9;i++) chartSimulator.nextWeek();
 			}
 			else
 			{
