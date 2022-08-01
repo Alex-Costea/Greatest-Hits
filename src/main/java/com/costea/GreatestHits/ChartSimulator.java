@@ -20,7 +20,6 @@ class ChartSimulator {
     private final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
 
     private final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
-    private final FileWriter chartsFile; //writing results to file
     private int currentWeek=-50;
     private ArrayList<ChartEntry> currentChartEntries;
 
@@ -112,10 +111,9 @@ class ChartSimulator {
         return name;
     }
 
-    //add approximately nr number of songs. not exact due to probabilities
-    private void addSongs(int nr)
+    private void addSongs()
     {
-        double minSongProb=1-1.0*nr/nrArtists;
+        double minSongProb=1-20.0/nrArtists;
         for(Artist artist:artists)
         {
             double prob=artist.songReleaseProb(currentWeek);
@@ -134,7 +132,7 @@ class ChartSimulator {
                                  int lastWeek,
                                  int points,
                                  int weeks,
-                                 boolean newAppearance) throws IOException {
+                                 boolean newAppearance) {
         String insideParen;
         if(lastWeek==-1 && newAppearance)
             insideParen="new";
@@ -145,9 +143,7 @@ class ChartSimulator {
         else if(lastWeek>position)
             insideParen=String.format("+%d",lastWeek-position);
         else insideParen=String.format("%d",lastWeek-position);
-        String format="#%d %s -- %s (%s) (points: %d; week: %d)\n";
         currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
-        chartsFile.write(String.format(format,position,artistName,songName,insideParen,points,weeks));
     }
 
     //format the year-end entry properly for printing to file
@@ -171,9 +167,6 @@ class ChartSimulator {
         NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
         int j=0;
         if(currentWeek>0) {
-            chartsFile.write("Week ");
-            chartsFile.write(String.valueOf(currentWeek));
-            chartsFile.write("\n");
             currentChartEntries=new ArrayList<>();
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
@@ -194,10 +187,9 @@ class ChartSimulator {
                 currentSong.setPeak(min(currentSong.getPeak(),j));
             }
             allCharts.add(new Chart(currentWeek,currentChartEntries));
-            chartsFile.write("\n");
         }
         songs.removeIf(x -> x.getPoints() <1);
-        addSongs(20);
+        addSongs();
         if(currentWeek>=0)
         {
             j=0;
@@ -212,8 +204,10 @@ class ChartSimulator {
 
     //TODO: additional functionality, list of year ends, year end = last 52 weeks
     //TODO: not strictly necessary for MVP
-    public void displayYearEnd() throws IOException {
-        chartsFile.write("Year End\n");
+    public void writeBiggestSongs() throws IOException {
+        File file=getFileFromResources("biggestSongs.txt");
+        FileWriter chartsFile = new FileWriter(file);
+        chartsFile.write("Biggest Songs\n");
         TreeMap<Double,Song> fullPointsOrdered = new TreeMap<>();
         for(Song song:songs)
             if(song.getFullPoints()>0)
@@ -229,6 +223,7 @@ class ChartSimulator {
                     currentSong.getName(),
                     currentSong.getPeak()));
         }
+        chartsFile.close();
     }
 
     private void initSongs()
@@ -243,17 +238,12 @@ class ChartSimulator {
             artistNames.add(artistName);
             artists.add(new Artist(artistName,i));
         }
-        addSongs(100);
-    }
-
-    public void closeWriter() throws IOException {
-        chartsFile.close();
+        for(int i=1;i<=5;i++)
+            addSongs();
     }
 
     public ChartSimulator() throws IOException {
         InitNames();
-        File file=getFileFromResources("charts.txt");
-        chartsFile = new FileWriter(file);
         initSongs();
         //simulate 50 weeks before the first week, as to properly populate the charts
         for(int i=0;i<50;i++)

@@ -1,8 +1,11 @@
 package com.costea.GreatestHits;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MainClass {
@@ -20,11 +23,16 @@ public class MainClass {
 
     public static void main(String[] args) {
         try {
+/*
+            Scanner reader = new Scanner(getFileFromResources("chartData.json"));
+            for(int i=1;i<=10;i++)
+                System.out.println(reader.nextLine());
+*/
+
             chartSimulator = new ChartSimulator();
-            for (int i = 1; i <= 52; i++)
+            for (int i = 1; i <= 10; i++)
                 chartSimulator.nextWeek();
-            chartSimulator.displayYearEnd();
-            chartSimulator.closeWriter();
+            chartSimulator.writeBiggestSongs();
 
             ObjectMapper mapper = new ObjectMapper();
 

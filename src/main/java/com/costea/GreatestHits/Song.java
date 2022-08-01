@@ -16,7 +16,7 @@ class Song {
     private int ID; // current ID
     private int week; //weeks since release
     private double points; // correlated to popularity * reception
-    private final Artist artist; // artist of the song
+    private Artist artist; // artist of the song
     private double fullPoints=0;
     private Integer peak = MAGIC_VALUE;
     private Integer currentPosition = MAGIC_VALUE;
@@ -82,7 +82,7 @@ class Song {
         return name;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -90,7 +90,7 @@ class Song {
         return ID;
     }
 
-    private void setID(int ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
@@ -98,7 +98,7 @@ class Song {
         return week;
     }
 
-    private void setWeek(int week) {
+    public void setWeek(int week) {
         this.week = week;
     }
 
@@ -106,7 +106,7 @@ class Song {
         return points;
     }
 
-    private void setPoints(double points) {
+    public void setPoints(double points) {
         this.points = points;
     }
 
@@ -119,6 +119,14 @@ class Song {
     public int getArtistID()
     {
         return artist.getID();
+    }
+
+    public void setArtistID(int ID)
+    {
+        //TODO: not good class design
+        for(Artist artist : MainClass.chartSimulator.getArtists())
+            if(artist.getID()==ID)
+                this.artist=artist;
     }
 
     public double getDecay() {
