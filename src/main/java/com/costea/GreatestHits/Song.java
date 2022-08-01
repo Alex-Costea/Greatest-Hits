@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 import static com.costea.GreatestHits.ChartSimulator.ran;
 
 class Song {
+    public static final int MAGIC_VALUE=999;
     private String name;
     private final double decay; //how quickly the song fan reception goes down
     private double popularity;
@@ -15,6 +16,24 @@ class Song {
     private double points; // correlated to popularity * reception
     private Artist artist; // artist of the song
     private double fullPoints=0;
+    private Integer peak=MAGIC_VALUE;
+    private Integer lastWeek=MAGIC_VALUE;
+
+    public Integer getPeak() {
+        return peak;
+    }
+
+    public void setPeak(Integer peak) {
+        this.peak = peak;
+    }
+
+    public Integer getLastWeek() {
+        return lastWeek;
+    }
+
+    public void setLastWeek(Integer lastWeek) {
+        this.lastWeek = lastWeek;
+    }
 
     Song(String name,Artist artist)
     {

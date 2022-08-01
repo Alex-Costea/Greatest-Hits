@@ -9,18 +9,15 @@ import static java.lang.Math.min;
 
 
 class ChartSimulator {
-    private static final int nrChartEntries =20; //chart entries to be shown every week
+    private static final int nrChartEntries = 20; //chart entries to be shown every week
     private static final ArrayList<String> maleNames = new ArrayList<>(); //list of male names
     private static final ArrayList<String> femaleNames = new ArrayList<>(); //list of female names
     private static final ArrayList<String> lastNames = new ArrayList<>(); //list of family names
     private static final ArrayList<String> titles = new ArrayList<>(); //list of song titles
     public static Random ran = new Random(); // random number generator
     private static final int nrArtists=500; //total number of songs
-    private final TreeMap<Integer,Integer> peaks=new TreeMap<>(); //peaks of songs
     private final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
     private final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
-    private final HashMap<Integer,Song> songsById=new HashMap<>(); //get a song by ID
-    private HashMap<Integer,Integer> lastWeekPos = new HashMap<>(); //positions last week
     private final FileWriter fw; //writing results to file
     private int currentWeek=-50;
     private ArrayList<ChartEntry> currentChartEntries;
@@ -29,7 +26,7 @@ class ChartSimulator {
         return allCharts;
     }
 
-    private final AllCharts allCharts=new AllCharts();
+    private final AllCharts allCharts=new AllCharts(songs,artists);
 
     private File getFileFromResources(String fileName) throws IOException {
         try {
@@ -115,28 +112,20 @@ class ChartSimulator {
         return name;
     }
 
-    int sumSongsReleased=0;
-    int nrTimesSongsReleased=0;
     //add approximately nr number of songs. not exact due to probabilities
     private void addSongs(int nr)
     {
         double minSongProb=1-1.0*nr/nrArtists;
-        int songsReleased=0;
         for(Artist artist:artists)
         {
-            double prob;
-            prob=artist.songReleaseProb(currentWeek);
+            double prob=artist.songReleaseProb(currentWeek);
             if(prob>minSongProb)
             {
-                songsReleased++;
                 Song newSong=new Song(pickSongTitle(),artist);
                 songs.add(newSong);
                 artist.getSongsReleased().add(newSong);
             }
         }
-        //System.out.println(nr+" "+songsReleased);
-        sumSongsReleased+=songsReleased;
-        nrTimesSongsReleased+=1;
     }
 
     //format the chart entry properly for printing to file
@@ -175,11 +164,8 @@ class ChartSimulator {
     //move charts to the next week
     public void nextWeek() throws IOException {
         currentWeek++;
-        for(Song song : songs) {
+        for(Song song : songs)
             song.addWeek();
-            if(!songsById.containsKey(song.getID()))
-                songsById.put(song.getID(),song);
-        }
         TreeMap<Double,Song> sortedSongs =new TreeMap<>();
         for (Song song : songs)
             sortedSongs.put(song.getPoints(),song);
@@ -195,8 +181,7 @@ class ChartSimulator {
                 j++;
                 if (j <= nrChartEntries) {
                     //format
-                    int lastPos;
-                    lastPos = lastWeekPos.getOrDefault(currentSong.getID(), -1);
+                    int lastPos = currentSong.getLastWeek();
                     if(lastPos> nrChartEntries) lastPos=-1;
                     addChartEntry(j,
                         currentSong.getArtist().getName(),
@@ -204,10 +189,10 @@ class ChartSimulator {
                         lastPos,
                         (int) currentSong.getPoints(),
                         currentSong.getWeek(),
-                        peaks.getOrDefault(currentSong.getID(),999)> nrChartEntries);
+                            currentSong.getLastWeek() > nrChartEntries);
                 }
                 currentSong.addFullPoints();
-                peaks.put(currentSong.getID(), min(peaks.getOrDefault(currentSong.getID(),999), j));
+                currentSong.setPeak(min(currentSong.getPeak(),j));
             }
             allCharts.add(new Chart(currentWeek,currentChartEntries));
             fw.write("\n");
@@ -216,12 +201,11 @@ class ChartSimulator {
         addSongs(20);
         if(currentWeek>=0)
         {
-            lastWeekPos=new HashMap<>();
             j=0;
             for (Map.Entry<Double, Song> entry : songsList.entrySet())
             {
                 j++;
-                lastWeekPos.put(entry.getValue().getID(),j);
+                entry.getValue().setLastWeek(j);
             }
         }
     }
@@ -231,20 +215,20 @@ class ChartSimulator {
     //TODO: not strictly necessary for MVP
     public void displayYearEnd() throws IOException {
         fw.write("Year End\n");
-        TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
+        TreeMap<Double,Song> fullPointsOrdered = new TreeMap<>();
         for(Song song:songs)
             if(song.getFullPoints()>0)
-                fullPointsOrdered.put(song.getFullPoints(), song.getID());
-        NavigableMap<Double, Integer> yearEnd=fullPointsOrdered.descendingMap();
+                fullPointsOrdered.put(song.getFullPoints(), song);
+        NavigableMap<Double, Song> yearEnd=fullPointsOrdered.descendingMap();
         int i=0;
-        for (Map.Entry<Double, Integer> entry : yearEnd.entrySet()) {
+        for (Map.Entry<Double, Song> entry : yearEnd.entrySet()) {
             i++;
             if(i>40) break;
-            Song currentSong=songsById.get(entry.getValue());
+            Song currentSong=entry.getValue();
             fw.write(FormatYearEndEntry(i,
                     currentSong.getArtist().getName(),
                     currentSong.getName(),
-                    peaks.getOrDefault(entry.getValue(),999)));
+                    currentSong.getPeak()));
         }
     }
 
@@ -264,7 +248,6 @@ class ChartSimulator {
     }
 
     public void closeWriter() throws IOException {
-        //System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
         fw.close();
     }
 
