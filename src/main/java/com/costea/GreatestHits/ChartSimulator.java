@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+import static com.costea.GreatestHits.MainClass.getFileFromResources;
 import static java.lang.Math.min;
 
 
@@ -17,25 +18,24 @@ class ChartSimulator {
     public static Random ran = new Random(); // random number generator
     private static final int nrArtists=500; //total number of songs
     private final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
+
     private final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
-    private final FileWriter fw; //writing results to file
+    private final FileWriter chartsFile; //writing results to file
     private int currentWeek=-50;
     private ArrayList<ChartEntry> currentChartEntries;
 
-    public AllCharts getAllCharts() {
+    private final List<Chart> allCharts = new ArrayList<>();
+
+    public List<Chart> getAllCharts() {
         return allCharts;
     }
 
-    private final AllCharts allCharts=new AllCharts(songs,artists);
+    public ArrayList<Artist> getArtists() {
+        return artists;
+    }
 
-    private File getFileFromResources(String fileName) throws IOException {
-        try {
-            return new File(getClass().getResource(fileName).getFile());
-        }
-        catch(NullPointerException ex)
-        {
-            throw new IOException();
-        }
+    public ArrayList<Song> getSongs() {
+        return songs;
     }
 
     //initialize artist and song titles by reading them from the file
@@ -123,7 +123,6 @@ class ChartSimulator {
             {
                 Song newSong=new Song(pickSongTitle(),artist);
                 songs.add(newSong);
-                artist.getSongsReleased().add(newSong);
             }
         }
     }
@@ -148,7 +147,7 @@ class ChartSimulator {
         else insideParen=String.format("%d",lastWeek-position);
         String format="#%d %s -- %s (%s) (points: %d; week: %d)\n";
         currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
-        fw.write(String.format(format,position,artistName,songName,insideParen,points,weeks));
+        chartsFile.write(String.format(format,position,artistName,songName,insideParen,points,weeks));
     }
 
     //format the year-end entry properly for printing to file
@@ -172,30 +171,30 @@ class ChartSimulator {
         NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
         int j=0;
         if(currentWeek>0) {
-            fw.write("Week ");
-            fw.write(String.valueOf(currentWeek));
-            fw.write("\n");
+            chartsFile.write("Week ");
+            chartsFile.write(String.valueOf(currentWeek));
+            chartsFile.write("\n");
             currentChartEntries=new ArrayList<>();
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
                 j++;
                 if (j <= nrChartEntries) {
                     //format
-                    int lastPos = currentSong.getLastWeek();
+                    int lastPos = currentSong.getCurrentPosition();
                     if(lastPos> nrChartEntries) lastPos=-1;
                     addChartEntry(j,
-                        currentSong.getArtist().getName(),
+                        currentSong.getAristName(),
                         currentSong.getName(),
                         lastPos,
                         (int) currentSong.getPoints(),
                         currentSong.getWeek(),
-                            currentSong.getLastWeek() > nrChartEntries);
+                            currentSong.getCurrentPosition() > nrChartEntries);
                 }
                 currentSong.addFullPoints();
                 currentSong.setPeak(min(currentSong.getPeak(),j));
             }
             allCharts.add(new Chart(currentWeek,currentChartEntries));
-            fw.write("\n");
+            chartsFile.write("\n");
         }
         songs.removeIf(x -> x.getPoints() <1);
         addSongs(20);
@@ -205,7 +204,7 @@ class ChartSimulator {
             for (Map.Entry<Double, Song> entry : songsList.entrySet())
             {
                 j++;
-                entry.getValue().setLastWeek(j);
+                entry.getValue().setCurrentPosition(j);
             }
         }
     }
@@ -214,7 +213,7 @@ class ChartSimulator {
     //TODO: additional functionality, list of year ends, year end = last 52 weeks
     //TODO: not strictly necessary for MVP
     public void displayYearEnd() throws IOException {
-        fw.write("Year End\n");
+        chartsFile.write("Year End\n");
         TreeMap<Double,Song> fullPointsOrdered = new TreeMap<>();
         for(Song song:songs)
             if(song.getFullPoints()>0)
@@ -225,8 +224,8 @@ class ChartSimulator {
             i++;
             if(i>40) break;
             Song currentSong=entry.getValue();
-            fw.write(FormatYearEndEntry(i,
-                    currentSong.getArtist().getName(),
+            chartsFile.write(FormatYearEndEntry(i,
+                    currentSong.getAristName(),
                     currentSong.getName(),
                     currentSong.getPeak()));
         }
@@ -248,13 +247,13 @@ class ChartSimulator {
     }
 
     public void closeWriter() throws IOException {
-        fw.close();
+        chartsFile.close();
     }
 
     public ChartSimulator() throws IOException {
         InitNames();
         File file=getFileFromResources("charts.txt");
-        fw = new FileWriter(file);
+        chartsFile = new FileWriter(file);
         initSongs();
         //simulate 50 weeks before the first week, as to properly populate the charts
         for(int i=0;i<50;i++)

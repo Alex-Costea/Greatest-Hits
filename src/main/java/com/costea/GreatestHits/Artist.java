@@ -7,7 +7,6 @@ import static java.lang.Math.*;
 // Artist class: contains the artist info
 class Artist {
     private String name;
-    private final ArrayList<Song> songsReleased = new ArrayList<>();
     //how popular the artist is. song popularity depends on this
     private double popularity;
     //how good their music is. song quality depends on this
@@ -42,10 +41,6 @@ class Artist {
         this.name = name;
     }
 
-    public ArrayList<Song> getSongsReleased() {
-        return songsReleased;
-    }
-
     public double getPopularity() {
         return popularity;
     }
@@ -68,5 +63,13 @@ class Artist {
 
     private void setID(int ID) {
         this.ID = ID;
+    }
+
+    public double getReleaseOffset() {
+        return releaseOffset;
+    }
+
+    public double getReleaseSchedule() {
+        return releaseSchedule;
     }
 }

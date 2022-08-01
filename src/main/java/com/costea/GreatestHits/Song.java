@@ -1,5 +1,7 @@
 package com.costea.GreatestHits;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static com.costea.GreatestHits.ChartSimulator.ran;
@@ -14,10 +16,24 @@ class Song {
     private int ID; // current ID
     private int week; //weeks since release
     private double points; // correlated to popularity * reception
-    private Artist artist; // artist of the song
+    private final Artist artist; // artist of the song
     private double fullPoints=0;
-    private Integer peak=MAGIC_VALUE;
-    private Integer lastWeek=MAGIC_VALUE;
+    private Integer peak = MAGIC_VALUE;
+    private Integer currentPosition = MAGIC_VALUE;
+
+    Song(String name,Artist artist)
+    {
+        this.setName(name);
+        this.artist=artist;
+        this.decay=ran.nextInt(90,97)*0.01; //between 0.90 and 0.96
+        double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
+        this.popularity=Math.pow(min(0.91,max(0, artist.getPopularity() +offsetPopularity)),4);
+        double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
+        this.fanReception= min(10, max(1, artist.getQuality() + offsetQuality));
+        totalID+=1;
+        this.setID(totalID);
+        this.setWeek(0);
+    }
 
     public Integer getPeak() {
         return peak;
@@ -27,26 +43,12 @@ class Song {
         this.peak = peak;
     }
 
-    public Integer getLastWeek() {
-        return lastWeek;
+    public Integer getCurrentPosition() {
+        return currentPosition;
     }
 
-    public void setLastWeek(Integer lastWeek) {
-        this.lastWeek = lastWeek;
-    }
-
-    Song(String name,Artist artist)
-    {
-        this.setName(name);
-        this.setArtist(artist);
-        this.decay=ran.nextInt(90,97)*0.01; //between 0.90 and 0.96
-        double offsetPopularity=ran.nextGaussian()/5; //random value used to calculate popularity
-        this.popularity=Math.pow(min(0.91,max(0, artist.getPopularity() +offsetPopularity)),4);
-        double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
-        this.fanReception= min(10, max(1, artist.getQuality() + offsetQuality));
-        totalID+=1;
-        this.setID(totalID);
-        this.setWeek(0);
+    public void setCurrentPosition(Integer currentPosition) {
+        this.currentPosition = currentPosition;
     }
 
     //add one week of release to song
@@ -108,11 +110,26 @@ class Song {
         this.points = points;
     }
 
-    public Artist getArtist() {
-        return artist;
+    @JsonIgnore
+    public String getAristName()
+    {
+        return artist.getName();
     }
 
-    private void setArtist(Artist artist) {
-        this.artist = artist;
+    public int getArtistID()
+    {
+        return artist.getID();
+    }
+
+    public double getDecay() {
+        return decay;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public double getFanReception() {
+        return fanReception;
     }
 }

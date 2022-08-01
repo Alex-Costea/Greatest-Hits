@@ -1,4 +1,4 @@
-var week=1;
+var week=52;
 var maxWeek=52;
 setElementHidden(false)
 document.getElementById("previousButton").addEventListener("click", previous);
