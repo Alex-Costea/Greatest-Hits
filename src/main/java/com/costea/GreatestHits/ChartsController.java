@@ -13,7 +13,7 @@ public class ChartsController {
 
     @GetMapping()
     public String getChartEntries(Model model){
-        model.addAttribute("chart", chartSimulator.getAllCharts().toArray());
+        model.addAttribute("chart", chartSimulator.getAllCharts());
         return "GreatestHits";
     }
 }

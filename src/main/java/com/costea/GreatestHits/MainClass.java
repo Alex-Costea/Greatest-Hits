@@ -1,7 +1,6 @@
 package com.costea.GreatestHits;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class MainClass {
     static ChartSimulator chartSimulator;
@@ -10,7 +9,7 @@ public class MainClass {
             chartSimulator = new ChartSimulator();
             for (int i = 1; i <= 52; i++)
                 chartSimulator.nextWeek();
-            chartSimulator.displayYearEnd();
+            //chartSimulator.displayYearEnd();
             chartSimulator.closeWriter();
         }
         catch(IOException ex)

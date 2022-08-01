@@ -226,6 +226,9 @@ class ChartSimulator {
         }
     }
 
+
+    //TODO: additional functionality, list of year ends, year end = last 52 weeks
+    //TODO: not strictly necessary for MVP
     public void displayYearEnd() throws IOException {
         fw.write("Year End\n");
         TreeMap<Double,Integer> fullPointsOrdered = new TreeMap<>();
@@ -239,7 +242,7 @@ class ChartSimulator {
             if(i>40) break;
             Song currentSong=songsById.get(entry.getValue());
             fw.write(FormatYearEndEntry(i,
-                    artists.get(currentSong.getArtist().getID()).getName(),
+                    currentSong.getArtist().getName(),
                     currentSong.getName(),
                     peaks.getOrDefault(entry.getValue(),999)));
         }
