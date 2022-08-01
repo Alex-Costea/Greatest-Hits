@@ -5,24 +5,33 @@
     <title>Greatest Hits!</title>
 </head>
 <body>
-<table>
-    <h1 th:inline="text">Week [[${chart.week}]]</h1>
-    <tr>
-        <th>Position</th>
-        <th>Artist Name</th>
-        <th>Song Name</th>
-        <th>±</th>
-        <th>Points</th>
-        <th>Weeks</th>
-    </tr>
-    <tr th:each="entry:${chart.chartEntries}">
-        <td th:text="${entry.position}">0</td>
-        <td th:text="${entry.artistName}">N/A</td>
-        <td th:text="${entry.songName}">N/A</td>
-        <td th:text="${entry.insideParam}">=</td>
-        <td th:text="${entry.points}">0</td>
-        <td th:text="${entry.weeks}">0</td>
-    </tr>
-</table>
+<th:block th:each="currentChart, stat:${chart}">
+    <div th:id="'div'+${stat.index+1}" style="display: none;">
+        <h1 th:inline="text">Week [[${currentChart.week}]]</h1>
+        <table>
+            <tr>
+                <th>Position</th>
+                <th>Artist Name</th>
+                <th>Song Name</th>
+                <th>±</th>
+                <th>Points</th>
+                <th>Weeks</th>
+            </tr>
+            <tr th:each="entry:${currentChart.chartEntries}">
+                <td th:text="${entry.position}">0</td>
+                <td th:text="${entry.artistName}">N/A</td>
+                <td th:text="${entry.songName}">N/A</td>
+                <td th:text="${entry.insideParam}">=</td>
+                <td th:text="${entry.points}">0</td>
+                <td th:text="${entry.weeks}">0</td>
+            </tr>
+        </table>
+    </div>
+</th:block>
+<script type="text/javascript">
+    var week=1;
+    p = document.getElementById("div"+week);
+    p.style.display="";
+</script>
 </body>
 </html>

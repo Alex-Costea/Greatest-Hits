@@ -25,9 +25,11 @@ class ChartSimulator {
     private int currentWeek=-50;
     private ArrayList<ChartEntry> currentChartEntries;
 
-    public Chart getCurrentChart() {
-        return new Chart(currentWeek,currentChartEntries);
+    public AllCharts getAllCharts() {
+        return allCharts;
     }
+
+    private final AllCharts allCharts=new AllCharts();
 
     private File getFileFromResources(String fileName) throws IOException {
         try {
@@ -207,6 +209,7 @@ class ChartSimulator {
                 currentSong.addFullPoints();
                 peaks.put(currentSong.getID(), min(peaks.getOrDefault(currentSong.getID(),999), j));
             }
+            allCharts.add(new Chart(currentWeek,currentChartEntries));
             fw.write("\n");
         }
         songs.removeIf(x -> x.getPoints() <1);
@@ -258,7 +261,7 @@ class ChartSimulator {
     }
 
     public void closeWriter() throws IOException {
-        System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
+        //System.out.println(sumSongsReleased/(double)nrTimesSongsReleased);
         fw.close();
     }
 

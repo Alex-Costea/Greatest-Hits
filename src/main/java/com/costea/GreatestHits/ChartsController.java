@@ -9,11 +9,11 @@ import static com.costea.GreatestHits.MainClass.chartSimulator;
 
 @Controller
 @RequestMapping("/GreatestHits")
-public class ChartEntryController {
+public class ChartsController {
 
     @GetMapping()
     public String getChartEntries(Model model){
-        model.addAttribute("chart", chartSimulator.getCurrentChart());
+        model.addAttribute("chart", chartSimulator.getAllCharts().toArray());
         return "GreatestHits";
     }
 }
