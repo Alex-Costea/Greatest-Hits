@@ -2,6 +2,8 @@ package com.costea.GreatestHits;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static com.costea.GreatestHits.ChartSimulator.ran;
@@ -12,7 +14,7 @@ class Song {
     private final double decay; //how quickly the song fan reception goes down
     private double popularity;
     private double fanReception; // goes down in time
-    private static int totalID=0; // which ID are we at?
+    public static int totalID=0; // which ID are we at?
     private int ID; // current ID
     private int week; //weeks since release
     private double points; // correlated to popularity * reception
@@ -20,6 +22,7 @@ class Song {
     private double fullPoints=0;
     private Integer peak = MAGIC_VALUE;
     private Integer currentPosition = MAGIC_VALUE;
+    private int artistID;
 
     Song(String name,Artist artist)
     {
@@ -33,6 +36,10 @@ class Song {
         totalID+=1;
         this.setID(totalID);
         this.setWeek(0);
+    }
+
+    Song(){
+        decay=1;
     }
 
     public Integer getPeak() {
@@ -52,8 +59,10 @@ class Song {
     }
 
     //add one week of release to song
-    public void addWeek()
+    public void addWeek(ArrayList<Artist> listOfArtists)
     {
+        if(artist==null)
+            initArtist(listOfArtists);
         this.setWeek(this.getWeek() + 1);
         //Complex math formula for setting hype
         double hype=Math.pow(10,ran.nextInt(40,161)/100.0)
@@ -67,6 +76,12 @@ class Song {
         //formula for setting points based on popularity and fan reception
         this.setPoints(Math.pow(this.popularity*this.fanReception/10,1.5)*100);
         this.setPoints(Math.pow(this.getPoints(),1.5)/((100/ this.getPoints()))*2);
+    }
+
+    private void initArtist(ArrayList<Artist> listOfArtists) {
+        for(Artist artist : GreatestHitsApplication.chartSimulator.getArtists())
+            if(artist.getID()==artistID)
+                this.artist=artist;
     }
 
     public void addFullPoints() {
@@ -123,10 +138,7 @@ class Song {
 
     public void setArtistID(int ID)
     {
-        //TODO: not good class design
-        for(Artist artist : MainClass.chartSimulator.getArtists())
-            if(artist.getID()==ID)
-                this.artist=artist;
+        artistID=ID;
     }
 
     public double getDecay() {

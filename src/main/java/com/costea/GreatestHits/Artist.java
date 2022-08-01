@@ -12,17 +12,17 @@ class Artist {
     //how good their music is. song quality depends on this
     private double quality;
     private int ID;
-    private final double releaseOffset= ran.nextDouble(Math.PI*2);
-    private final double releaseSchedule=ran.nextDouble(5.0,10.0);
+    private final double releaseOffset = ran.nextDouble(Math.PI * 2);
+    private final double releaseSchedule = ran.nextDouble(5.0, 10.0);
 
-    Artist(String name,int ID)
-    {
+    Artist(String name, int ID) {
         this.setName(name);
         this.setID(ID);
-        this.setPopularity(ran.nextInt(0,911)/1000.0);
-        this.setQuality(ran.nextInt(100,1001)/100.0);
+        this.setPopularity(ran.nextInt(0, 911) / 1000.0);
+        this.setQuality(ran.nextInt(100, 1001) / 100.0);
     }
 
+    Artist() {}
 
     //How likely is it that this artist will release a song this week?
     //Assumed to be evenly distributed from 0 to 1, although it is not strictly speaking

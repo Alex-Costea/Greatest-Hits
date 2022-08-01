@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-import static com.costea.GreatestHits.MainClass.getFileFromResources;
+import static com.costea.GreatestHits.GreatestHitsApplication.getFileFromResources;
 import static java.lang.Math.min;
 
 
@@ -17,13 +17,11 @@ class ChartSimulator {
     private static final ArrayList<String> titles = new ArrayList<>(); //list of song titles
     public static Random ran = new Random(); // random number generator
     private static final int nrArtists=500; //total number of songs
-    private final ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
+    private ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
 
-    private final ArrayList<Song> songs=new ArrayList<>(); //list of all songs
+    private ArrayList<Song> songs=new ArrayList<>(); //list of all songs
     private int currentWeek=-50;
-    private ArrayList<ChartEntry> currentChartEntries;
-
-    private final List<Chart> allCharts = new ArrayList<>();
+    private List<Chart> allCharts = new ArrayList<>();
 
     public List<Chart> getAllCharts() {
         return allCharts;
@@ -126,13 +124,13 @@ class ChartSimulator {
     }
 
     //format the chart entry properly for printing to file
-    private void addChartEntry(int position,
-                                 String artistName,
-                                 String songName,
-                                 int lastWeek,
-                                 int points,
-                                 int weeks,
-                                 boolean newAppearance) {
+    private ChartEntry createChartEntry(int position,
+                                        String artistName,
+                                        String songName,
+                                        int lastWeek,
+                                        int points,
+                                        int weeks,
+                                        boolean newAppearance) {
         String insideParen;
         if(lastWeek==-1 && newAppearance)
             insideParen="new";
@@ -143,7 +141,8 @@ class ChartSimulator {
         else if(lastWeek>position)
             insideParen=String.format("+%d",lastWeek-position);
         else insideParen=String.format("%d",lastWeek-position);
-        currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
+        return new ChartEntry(position,artistName,songName,insideParen,points,weeks);
+        //currentChartEntries.add(new ChartEntry(position,artistName,songName,insideParen,points,weeks));
     }
 
     //format the year-end entry properly for printing to file
@@ -160,14 +159,14 @@ class ChartSimulator {
     public void nextWeek() throws IOException {
         currentWeek++;
         for(Song song : songs)
-            song.addWeek();
+            song.addWeek(artists);
         TreeMap<Double,Song> sortedSongs =new TreeMap<>();
         for (Song song : songs)
             sortedSongs.put(song.getPoints(),song);
         NavigableMap<Double, Song> songsList=sortedSongs.descendingMap();
         int j=0;
         if(currentWeek>0) {
-            currentChartEntries=new ArrayList<>();
+            ArrayList<ChartEntry> currentChartEntries=new ArrayList<>();
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
                 j++;
@@ -175,13 +174,13 @@ class ChartSimulator {
                     //format
                     int lastPos = currentSong.getCurrentPosition();
                     if(lastPos> nrChartEntries) lastPos=-1;
-                    addChartEntry(j,
+                    currentChartEntries.add(createChartEntry(j,
                         currentSong.getAristName(),
                         currentSong.getName(),
                         lastPos,
                         (int) currentSong.getPoints(),
                         currentSong.getWeek(),
-                            currentSong.getCurrentPosition() > nrChartEntries);
+                            currentSong.getCurrentPosition() > nrChartEntries));
                 }
                 currentSong.addFullPoints();
                 currentSong.setPeak(min(currentSong.getPeak(),j));
@@ -242,11 +241,20 @@ class ChartSimulator {
             addSongs();
     }
 
+    public ChartSimulator(ArrayList<Artist> artists,ArrayList<Song> songs, ArrayList<Chart> chartData) throws IOException {
+        InitNames();
+        this.artists=artists;
+        this.songs=songs;
+        this.allCharts=chartData;
+        Song.totalID=songs.get(songs.size()-1).getID()+1;
+        currentWeek=allCharts.get(allCharts.size()-1).getWeek();
+    }
+
     public ChartSimulator() throws IOException {
         InitNames();
         initSongs();
         //simulate 50 weeks before the first week, as to properly populate the charts
-        for(int i=0;i<50;i++)
+        for (int i = 0; i < 50; i++)
             nextWeek();
     }
 
