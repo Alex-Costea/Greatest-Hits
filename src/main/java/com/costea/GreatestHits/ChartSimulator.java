@@ -1,12 +1,9 @@
 package com.costea.GreatestHits;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static com.costea.GreatestHits.GreatestHitsApplication.accessFile;
 import static com.costea.GreatestHits.GreatestHitsApplication.getInputStream;
 import static java.lang.Math.min;
 
@@ -161,7 +158,7 @@ class ChartSimulator {
     public void nextWeek() throws IOException {
         currentWeek++;
         for(Song song : songs)
-            song.addWeek(artists);
+            song.addWeek();
         TreeMap<Double,Song> sortedSongs =new TreeMap<>();
         for (Song song : songs)
             sortedSongs.put(song.getPoints(),song);
@@ -248,11 +245,15 @@ class ChartSimulator {
         this.allCharts=chartData;
         Song.totalID=songs.get(songs.size()-1).getID()+1;
         currentWeek=allCharts.get(allCharts.size()-1).getWeek();
+        for(Song song:songs)
+            song.transmitArtistData(artists);
     }
 
     public ChartSimulator() throws IOException {
         InitNames();
         initSongs();
+        for(Song song:songs)
+            song.transmitArtistData(artists);
         //simulate 50 weeks before the first week, as to properly populate the charts
         for (int i = 0; i < 50; i++)
             nextWeek();

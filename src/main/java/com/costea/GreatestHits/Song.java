@@ -38,6 +38,14 @@ class Song {
         this.setWeek(0);
     }
 
+    public void transmitArtistData(ArrayList<Artist> listOfArtists)
+    {
+        if(artist==null)
+            for(Artist artist : listOfArtists)
+                if(artist.getID()==artistID)
+                    this.artist=artist;
+    }
+
     Song(){
         decay=1;
     }
@@ -59,10 +67,8 @@ class Song {
     }
 
     //add one week of release to song
-    public void addWeek(ArrayList<Artist> listOfArtists)
+    public void addWeek()
     {
-        if(artist==null)
-            initArtist(listOfArtists);
         this.setWeek(this.getWeek() + 1);
         //Complex math formula for setting hype
         double hype=Math.pow(10,ran.nextInt(40,161)/100.0)
@@ -76,12 +82,6 @@ class Song {
         //formula for setting points based on popularity and fan reception
         this.setPoints(Math.pow(this.popularity*this.fanReception/10,1.5)*100);
         this.setPoints(Math.pow(this.getPoints(),1.5)/((100/ this.getPoints()))*2);
-    }
-
-    private void initArtist(ArrayList<Artist> listOfArtists) {
-        for(Artist artist : GreatestHitsApplication.chartSimulator.getArtists())
-            if(artist.getID()==artistID)
-                this.artist=artist;
     }
 
     public void addFullPoints() {

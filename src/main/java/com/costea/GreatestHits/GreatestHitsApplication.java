@@ -17,9 +17,9 @@ public class GreatestHitsApplication {
 	static ChartSimulator chartSimulator;
 
 	public static File accessFile(String fileName) throws IOException {
-		File file = new File("home/gh_data/" + fileName);
-		file.getParentFile().mkdirs();
-		file.createNewFile();
+		File file = new File("../gh_data/" + fileName);
+		System.out.println(file.getParentFile().mkdirs());
+		System.out.println(file.createNewFile());
 		return file;
 	}
 
@@ -46,7 +46,7 @@ public class GreatestHitsApplication {
 				ArrayList<Chart> chartData = mapper.readValue(accessFile("chartData.json"),
 						t.constructCollectionType(ArrayList.class,Chart.class));
 				chartSimulator = new ChartSimulator(artistList,songList,chartData);
-				if(args[0].equals("addweek"))
+				if(args.length>0 && args[0].equals("addweek"))
 				{
 					chartSimulator.nextWeek();
 				}
