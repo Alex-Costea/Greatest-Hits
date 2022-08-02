@@ -2,4 +2,4 @@
 
 Charts simulator written in Java/Spring Boot
 
-check it out: http://apps.costea.in/GreatestHits
+[Check it out online!](http://apps.costea.in/GreatestHits)
