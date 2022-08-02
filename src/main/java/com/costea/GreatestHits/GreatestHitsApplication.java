@@ -4,26 +4,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 @SpringBootApplication
 public class GreatestHitsApplication {
 	static ChartSimulator chartSimulator;
 
-	public static File getFileFromResources(String fileName) throws IOException {
-		try {
-			return new File(ChartSimulator.class.getClassLoader().
-					getResource("com/costea/GreatestHits/"+fileName).getFile());
-		}
-		catch(NullPointerException ex)
-		{
-			throw new IOException();
-		}
+	public static File accessFile(String fileName) throws IOException {
+		File file = new File("home/gh_data/" + fileName);
+		file.getParentFile().mkdirs();
+		file.createNewFile();
+		return file;
 	}
+
+	public static InputStream getInputStream(String fileName) throws IOException {
+		return (new ClassPathResource("com/costea/GreatestHits/" + fileName)).getInputStream();
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(GreatestHitsApplication.class, args);
 		ObjectMapper mapper = new ObjectMapper();
@@ -36,25 +39,25 @@ public class GreatestHitsApplication {
 			else
 			{
 				TypeFactory t = TypeFactory.defaultInstance();
-				ArrayList<Artist> artistList = mapper.readValue(getFileFromResources("artistData.json"),
+				ArrayList<Artist> artistList = mapper.readValue(accessFile("artistData.json"),
 						t.constructCollectionType(ArrayList.class,Artist.class));
-				ArrayList<Song> songList = mapper.readValue(getFileFromResources("songData.json"),
+				ArrayList<Song> songList = mapper.readValue(accessFile("songData.json"),
 						t.constructCollectionType(ArrayList.class,Song.class));
-				ArrayList<Chart> chartData = mapper.readValue(getFileFromResources("chartData.json"),
+				ArrayList<Chart> chartData = mapper.readValue(accessFile("chartData.json"),
 						t.constructCollectionType(ArrayList.class,Chart.class));
 				chartSimulator = new ChartSimulator(artistList,songList,chartData);
 			}
 			chartSimulator.nextWeek();
 			//save data
-			FileWriter jsonWriter = new FileWriter(getFileFromResources("chartData.json"));
+			FileWriter jsonWriter = new FileWriter(accessFile("chartData.json"));
 			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getAllCharts()));
 			jsonWriter.close();
 
-			jsonWriter = new FileWriter(getFileFromResources("artistData.json"));
+			jsonWriter = new FileWriter(accessFile("artistData.json"));
 			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getArtists()));
 			jsonWriter.close();
 
-			jsonWriter = new FileWriter(getFileFromResources("songData.json"));
+			jsonWriter = new FileWriter(accessFile("songData.json"));
 			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getSongs()));
 			jsonWriter.close();
 

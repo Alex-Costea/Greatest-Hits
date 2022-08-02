@@ -3,9 +3,11 @@ package com.costea.GreatestHits;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
-import static com.costea.GreatestHits.GreatestHitsApplication.getFileFromResources;
+import static com.costea.GreatestHits.GreatestHitsApplication.accessFile;
+import static com.costea.GreatestHits.GreatestHitsApplication.getInputStream;
 import static java.lang.Math.min;
 
 
@@ -40,25 +42,25 @@ class ChartSimulator {
         Scanner scanner;
 
         //Male
-        File maleFile=getFileFromResources("male");
+        InputStream maleFile= getInputStream("male");
         scanner = new Scanner(maleFile);
         while (scanner.hasNextLine())
             maleNames.add(scanner.nextLine());
 
         //Female
-        File femaleFile=getFileFromResources("female");
+        InputStream femaleFile= getInputStream("female");
         scanner = new Scanner(femaleFile);
         while (scanner.hasNextLine())
             femaleNames.add(scanner.nextLine());
 
         //Last
-        File lastFile=getFileFromResources("last");
+        InputStream lastFile= getInputStream("last");
         scanner = new Scanner(lastFile);
         while (scanner.hasNextLine())
             lastNames.add(scanner.nextLine());
 
         //Titles
-        File titlesFile=getFileFromResources("titles");
+        InputStream titlesFile= getInputStream("titles");
         scanner = new Scanner(titlesFile);
         while (scanner.hasNextLine())
             titles.add(scanner.nextLine());
@@ -204,10 +206,8 @@ class ChartSimulator {
 
     //TODO: additional functionality, list of year ends, year end = last 52 weeks
     //TODO: not strictly necessary for MVP
-    public void writeBiggestSongs() throws IOException {
-        File file=getFileFromResources("biggestSongs.txt");
-        FileWriter chartsFile = new FileWriter(file);
-        chartsFile.write("Biggest Songs\n");
+    public void writeBiggestSongs() {
+        System.out.println("Biggest Songs\n");
         TreeMap<Double,Song> fullPointsOrdered = new TreeMap<>();
         for(Song song:songs)
             if(song.getFullPoints()>0)
@@ -218,12 +218,11 @@ class ChartSimulator {
             i++;
             if(i>40) break;
             Song currentSong=entry.getValue();
-            chartsFile.write(FormatYearEndEntry(i,
+            System.out.println(FormatYearEndEntry(i,
                     currentSong.getAristName(),
                     currentSong.getName(),
                     currentSong.getPeak()));
         }
-        chartsFile.close();
     }
 
     private void initSongs()
