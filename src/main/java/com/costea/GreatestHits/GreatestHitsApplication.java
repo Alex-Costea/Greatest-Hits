@@ -18,8 +18,8 @@ public class GreatestHitsApplication {
 
 	public static File accessFile(String fileName) throws IOException {
 		File file = new File("../gh_data/" + fileName);
-		System.out.println(file.getParentFile().mkdirs());
-		System.out.println(file.createNewFile());
+		file.getParentFile().mkdirs();
+		file.createNewFile();
 		return file;
 	}
 
