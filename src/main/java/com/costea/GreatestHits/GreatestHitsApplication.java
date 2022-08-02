@@ -30,11 +30,12 @@ public class GreatestHitsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GreatestHitsApplication.class, args);
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.findAndRegisterModules();
 		try {
 			if(args.length>0 && args[0].equals("init"))
 			{
 				chartSimulator = new ChartSimulator();
-				for(int i=1;i<=10;i++) chartSimulator.nextWeek();
+				chartSimulator.nextWeek();
 			}
 			else
 			{

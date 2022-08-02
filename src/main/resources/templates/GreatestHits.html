@@ -7,7 +7,7 @@
 <body>
 <th:block th:each="currentChart, stat:${chart}">
     <div th:id="'div'+${stat.index+1}" style="display: none;">
-        <h1 th:inline="text">Week [[${currentChart.week}]]</h1>
+        <h1 th:inline="text">Day [[${currentChart.week}]] - [[${currentChart.getDateFormatted()}]]</h1>
         <table>
             <tr>
                 <th>Position</th>

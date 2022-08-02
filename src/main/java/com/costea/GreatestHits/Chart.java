@@ -1,10 +1,31 @@
 package com.costea.GreatestHits;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 
 public class Chart {
     private int week=-1;
     private ArrayList<ChartEntry> chartEntries=null;
+
+    private LocalDate localDate=LocalDate.now();
+
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
+    }
+
+    @JsonIgnore
+    public String getDateFormatted()
+    {
+        return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG));
+    }
 
     public int getWeek() {
         return week;
