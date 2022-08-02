@@ -34,7 +34,7 @@ public class GreatestHitsApplication {
 			if(args.length>0 && args[0].equals("init"))
 			{
 				chartSimulator = new ChartSimulator();
-				for(int i=1;i<=9;i++) chartSimulator.nextWeek();
+				for(int i=1;i<=10;i++) chartSimulator.nextWeek();
 			}
 			else
 			{
@@ -46,8 +46,11 @@ public class GreatestHitsApplication {
 				ArrayList<Chart> chartData = mapper.readValue(accessFile("chartData.json"),
 						t.constructCollectionType(ArrayList.class,Chart.class));
 				chartSimulator = new ChartSimulator(artistList,songList,chartData);
+				if(args[0].equals("addweek"))
+				{
+					chartSimulator.nextWeek();
+				}
 			}
-			chartSimulator.nextWeek();
 			//save data
 			FileWriter jsonWriter = new FileWriter(accessFile("chartData.json"));
 			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getAllCharts()));
