@@ -16,7 +16,8 @@ public class GreatestHitsApplication {
 
 	public static File getFileFromResources(String fileName) throws IOException {
 		try {
-			return new File(ChartSimulator.class.getResource(fileName).getFile());
+			return new File(ChartSimulator.class.getClassLoader().
+					getResource("com/costea/GreatestHits/"+fileName).getFile());
 		}
 		catch(NullPointerException ex)
 		{
