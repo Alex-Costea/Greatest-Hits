@@ -170,7 +170,6 @@ class ChartSimulator {
                 Song currentSong = entry.getValue();
                 j++;
                 currentSong.setPeak(min(currentSong.getPeak(),j));
-                currentSong.addFullPoints();
                 if (j <= nrChartEntries) {
                     //format
                     int lastPos = currentSong.getCurrentPosition();

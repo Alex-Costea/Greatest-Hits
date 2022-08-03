@@ -1,5 +1,6 @@
 package com.costea.GreatestHits;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.springframework.boot.SpringApplication;
@@ -31,6 +32,8 @@ public class GreatestHitsApplication {
 		SpringApplication.run(GreatestHitsApplication.class, args);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.findAndRegisterModules();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 		try {
 			if(args.length>0 && args[0].equals("init"))
 			{

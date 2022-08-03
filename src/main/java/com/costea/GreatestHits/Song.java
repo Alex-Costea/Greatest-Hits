@@ -19,7 +19,6 @@ class Song {
     private int week; //weeks since release
     private double points; // correlated to popularity * reception
     private Artist artist; // artist of the song
-    private double fullPoints=0;
     private Integer peak = MAGIC_VALUE;
     private Integer currentPosition = MAGIC_VALUE;
     private int artistID;
@@ -84,14 +83,6 @@ class Song {
         this.setPoints(Math.pow(this.getPoints(),1.5)/((100/ this.getPoints()))*2);
     }
 
-    public void addFullPoints() {
-        fullPoints+= getPoints();
-    }
-
-    public double getFullPoints()
-    {
-        return fullPoints;
-    }
 
     public String getName() {
         return name;
