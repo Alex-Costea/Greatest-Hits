@@ -201,27 +201,6 @@ class ChartSimulator {
     }
 
 
-    //TODO: additional functionality, list of year ends, year end = last 52 weeks
-    //TODO: not strictly necessary for MVP
-    public void writeBiggestSongs() {
-        System.out.println("Biggest Songs\n");
-        TreeMap<Double,Song> fullPointsOrdered = new TreeMap<>();
-        for(Song song:songs)
-            if(song.getFullPoints()>0)
-                fullPointsOrdered.put(song.getFullPoints(), song);
-        NavigableMap<Double, Song> yearEnd=fullPointsOrdered.descendingMap();
-        int i=0;
-        for (Map.Entry<Double, Song> entry : yearEnd.entrySet()) {
-            i++;
-            if(i>40) break;
-            Song currentSong=entry.getValue();
-            System.out.println(FormatYearEndEntry(i,
-                    currentSong.getAristName(),
-                    currentSong.getName(),
-                    currentSong.getPeak()));
-        }
-    }
-
     private void initSongs()
     {
         HashSet<String> artistNames=new HashSet<>();
