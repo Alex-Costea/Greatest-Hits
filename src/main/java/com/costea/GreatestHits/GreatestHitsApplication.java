@@ -16,6 +16,7 @@ import java.util.ArrayList;
 @SpringBootApplication
 public class GreatestHitsApplication {
 	static ChartSimulator chartSimulator;
+	static ObjectMapper mapper = new ObjectMapper();
 
 	public static File accessFile(String fileName) throws IOException {
 		File file = new File("../gh_data/" + fileName);
@@ -30,7 +31,6 @@ public class GreatestHitsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GreatestHitsApplication.class, args);
-		ObjectMapper mapper = new ObjectMapper();
 		mapper.findAndRegisterModules();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
