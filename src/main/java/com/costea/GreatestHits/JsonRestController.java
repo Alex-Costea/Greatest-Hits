@@ -11,11 +11,11 @@ import static com.costea.GreatestHits.GreatestHitsApplication.*;
 @RestController
 public class JsonRestController {
 
-    @GetMapping(value="/json")
+    @GetMapping(value="/data.json")
     public String read() {
         try {
             var x= mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getAllCharts());
-            System.out.println(x);
+            //System.out.println(x);
             return x;
         }
         catch (JsonProcessingException ex)
