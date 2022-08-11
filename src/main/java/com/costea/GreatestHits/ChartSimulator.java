@@ -169,6 +169,7 @@ class ChartSimulator {
             for (Map.Entry<Double, Song> entry : songsList.entrySet()) {
                 Song currentSong = entry.getValue();
                 j++;
+                var previousPeak=currentSong.getPeak();
                 currentSong.setPeak(min(currentSong.getPeak(),j));
                 if (j <= nrChartEntries) {
                     //format
@@ -180,7 +181,7 @@ class ChartSimulator {
                         lastPos,
                         (int) currentSong.getPoints(),
                         currentSong.getWeek(),
-          currentSong.getCurrentPosition() > nrChartEntries,
+                        previousPeak > nrChartEntries,
                         currentSong.getPeak()));
                 }
             }
