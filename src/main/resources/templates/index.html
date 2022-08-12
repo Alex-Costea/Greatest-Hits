@@ -3,36 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Greatest Hits!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
+<style>
+.flex-box {
+  display:flex;
+  justify-content:center;
+}
+.space{
+  margin-left: 5%;
+}
+</style>
 <body>
+<blockquote class="blockquote text-center">
+    <h1>Greatest Hits!</h1>
+</blockquote>
+
+<div class="flex-box">
+    <button id="previousButton" type="button" class="btn btn-primary"><- previous</button>
+    <div class="space"></div>
+    <button id="nextButton" type="button" class="btn btn-primary">next -></button>
+</div>
+
 <th:block th:each="currentChart, stat:${chart}">
     <div th:id="'div'+${stat.index+1}" style="display: none;">
-        <h1 th:inline="text">Week [[${currentChart.week}]]</h1>
-        <h3 th:inline="text">Released on: [[${currentChart.getDateFormatted()}]]</h3>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Artist Name</th>
-                <th>Song Name</th>
-                <th>±</th>
-                <th>Points</th>
-                <th>Peak</th>
-                <th>Weeks</th>
-            </tr>
-            <tr th:each="entry:${currentChart.chartEntries}">
-                <td th:text="${entry.position}">0</td>
-                <td th:text="${entry.artistName}">N/A</td>
-                <td th:text="${entry.songName}">N/A</td>
-                <td th:text="${entry.insideParam}">=</td>
-                <td th:text="${entry.points}">0</td>
-                <td th:text="${entry.peak}">0</td>
-                <td th:text="${entry.weeks}">0</td>
-            </tr>
+        <div class="text-center">
+            <h3 th:inline="text">Week [[${currentChart.week}]]
+                <small class="text-muted"> — [[${currentChart.getDateFormatted()}]]</small></h3>
+        </div>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Artist Name</th>
+                    <th>Song Name</th>
+                    <th>±</th>
+                    <th>Points</th>
+                    <th>Peak</th>
+                    <th>Weeks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry:${currentChart.chartEntries}">
+                    <td th:text="${entry.position}">0</td>
+                    <td th:text="${entry.artistName}">N/A</td>
+                    <td th:text="${entry.songName}">N/A</td>
+                    <td th:text="${entry.insideParam}">=</td>
+                    <td th:text="${entry.points}">0</td>
+                    <td th:text="${entry.peak}">0</td>
+                    <td th:text="${entry.weeks}">0</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </th:block>
-<button id="previousButton" type="button"><-</button>
-<button id="nextButton" type="button">-></button>
+
 <script src="script.js"></script>
 </body>
 </html>
