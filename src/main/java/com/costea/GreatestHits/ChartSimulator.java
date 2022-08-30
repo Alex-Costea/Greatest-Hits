@@ -34,6 +34,12 @@ class ChartSimulator {
         return songs;
     }
 
+    //just to be safe, this gets recalculated instead of using the currentWeek variable
+    public int getCurrentWeek()
+    {
+        return getAllCharts().get(getAllCharts().size()-1).getWeek();
+    }
+
     //initialize artist and song titles by reading them from the file
     private void InitNames() throws IOException {
         Scanner scanner;
@@ -142,16 +148,6 @@ class ChartSimulator {
             insideParen=String.format("+%d",lastWeek-position);
         else insideParen=String.format("%d",lastWeek-position);
         return new ChartEntry(position,artistName,songName,insideParen,points,weeks,peak);
-    }
-
-    //format the year-end entry properly for printing to file
-    private String FormatYearEndEntry(int position,
-                                     String artistName,
-                                     String songName,
-                                     int peak)
-    {
-        return String.format("#%d %s -- %s (peak: %d)\n",
-                position,artistName,songName,peak);
     }
 
     //move charts to the next week

@@ -7,7 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
@@ -44,35 +46,25 @@ public class ChartsController {
         throw new ResponseStatusException(NOT_FOUND, "Artist not found!");
     }
 
-    //TODO: Redirect from /artist/song/week to /song/id/
+    //TODO: Solve in case multiple songs with same artist and song title
     //TODO: Also make an actual page for it
-    @GetMapping(value="/song/{ID}")
+    @GetMapping(value="/song/{artist}/{songName}")
     @ResponseBody
-    public String getSongByName(@PathVariable("ID") int ID)
+    public String getSongByID(@PathVariable("artist") String artistName,
+                              @PathVariable("songName") String songName)
     {
-        var songs =chartSimulator.getSongs();
-        System.out.println(ID);
-        for(Song song : songs)
-            if(ID==song.getID())
-            {
-                StringBuilder sb=new StringBuilder("Artist: " + song.getAristName() + "; Title: " + song.getName() + "; ID: " + song.getID());
-                String artistName=song.getAristName();
-                String songName=song.getName();
-                int songWeek=song.getWeek();
-                int currentChartWeek=chartSimulator.getAllCharts().get(chartSimulator.getAllCharts().size()-1).getWeek();
-                int i = currentChartWeek-1;
-                for(Chart chart :chartSimulator.getAllCharts()) {
-                    for (ChartEntry chartEntry : chart.getChartEntries())
-                        if (chartEntry.getArtistName().equals(artistName)
-                                && chartEntry.getSongName().equals(songName)
-                                && chartEntry.getWeeks() == songWeek - i)
-                            sb.append("\n<br />Week: ").append(chart.getWeek()).append("; Position: ").append(chartEntry.getPosition());
-                    i--;
+        StringBuilder sb=new StringBuilder("Artist: " + artistName + "; Title: " + songName);
+        int currentChartWeek=chartSimulator.getCurrentWeek();
+        boolean foundEntries=false;
+        for(Chart chart :chartSimulator.getAllCharts())
+            for (ChartEntry chartEntry : chart.getChartEntries())
+                if (chartEntry.getArtistName().equals(artistName) && chartEntry.getSongName().equals(songName))
+                {
+                    sb.append("\n<br />Week: ").append(chart.getWeek()).append("; Position: ").append(chartEntry.getPosition());
+                    foundEntries=true;
                 }
-                return sb.toString();
-
-            }
-        throw new ResponseStatusException(NOT_FOUND, "Song not found!");
+        if(foundEntries) return sb.toString();
+        else throw new ResponseStatusException(NOT_FOUND, "Song not found!");
     }
 
     @GetMapping(value="/data.json")
