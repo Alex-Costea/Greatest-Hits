@@ -41,8 +41,9 @@
             <tbody>
                 <tr th:each="entry:${currentChart.chartEntries}">
                     <td th:text="${entry.position}">0</td>
-                    <td th:text="${entry.artistName}">N/A</td>
-                    <td th:text="${entry.songName}">N/A</td>
+                    <td><a th:text="${entry.artistName}" th:href="@{/artist/{name}(name=${entry.artistName})}">N/A</a></td>
+                    <td><a th:text="${entry.songName}"
+                           th:href="@{/song/{artist}/{name}(artist=${entry.artistName},name=${entry.songName})}">N/A</a></td>
                     <td th:text="${entry.insideParam}">=</td>
                     <td th:text="${entry.points}">0</td>
                     <td th:text="${entry.peak}">0</td>

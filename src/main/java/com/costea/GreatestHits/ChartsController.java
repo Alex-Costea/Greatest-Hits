@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Objects;
+import java.util.*;
 
 import static com.costea.GreatestHits.GreatestHitsApplication.chartSimulator;
 import static com.costea.GreatestHits.GreatestHitsApplication.mapper;
@@ -27,21 +27,22 @@ public class ChartsController {
         return "index";
     }
 
-    //TODO: Make an actual page for it
     @GetMapping(value="/artist/{name}")
-    @ResponseBody
-    public String getArtistByName(@PathVariable("name") String artistName)
+    public String getArtistByName(@PathVariable("name") String artistName,Model model)
     {
-        var artists =chartSimulator.getArtists();
-        for(Artist artist : artists)
+        List<SongListing> songList=new ArrayList<>();
+        for(Artist artist : chartSimulator.getArtists())
             if(Objects.equals(artist.getName(), artistName))
             {
-                StringBuilder sb = new StringBuilder("Name: " + artist.getName() + "; ID: " + artist.getID());
                 int artistId=artist.getID();
                 for(Song song: chartSimulator.getSongs())
                     if(song.getArtistID()==artistId)
-                        sb.append("\n<br />Song: ").append(song.getName()).append("; ID: ").append(song.getID());
-                return sb.toString();
+                        if(song.getWeek()>0)
+                           songList.add(new SongListing(song));
+                songList.sort(Comparator.comparingInt(SongListing::getPositionAsInt));
+                model.addAttribute("artistName",artist.getName());
+                model.addAttribute("songList", songList);
+                return "artist";
             }
         throw new ResponseStatusException(NOT_FOUND, "Artist not found!");
     }
@@ -49,21 +50,27 @@ public class ChartsController {
     //TODO: Solve in case multiple songs with same artist and song title
     //TODO: Also make an actual page for it
     @GetMapping(value="/song/{artist}/{songName}")
-    @ResponseBody
     public String getSongByID(@PathVariable("artist") String artistName,
-                              @PathVariable("songName") String songName)
+                              @PathVariable("songName") String songName,
+                              Model model)
     {
-        StringBuilder sb=new StringBuilder("Artist: " + artistName + "; Title: " + songName);
-        int currentChartWeek=chartSimulator.getCurrentWeek();
+        List<ChartEntry> chartEntries=new ArrayList<>();
         boolean foundEntries=false;
         for(Chart chart :chartSimulator.getAllCharts())
             for (ChartEntry chartEntry : chart.getChartEntries())
                 if (chartEntry.getArtistName().equals(artistName) && chartEntry.getSongName().equals(songName))
                 {
-                    sb.append("\n<br />Week: ").append(chart.getWeek()).append("; Position: ").append(chartEntry.getPosition());
                     foundEntries=true;
+                    chartEntry.setCurrentWeek(chart.getWeek());
+                    chartEntries.add(chartEntry);
                 }
-        if(foundEntries) return sb.toString();
+        if(foundEntries)
+        {
+            model.addAttribute("artistName",artistName);
+            model.addAttribute("songName",songName);
+            model.addAttribute("chartEntries", chartEntries);
+            return "song";
+        }
         else throw new ResponseStatusException(NOT_FOUND, "Song not found!");
     }
 

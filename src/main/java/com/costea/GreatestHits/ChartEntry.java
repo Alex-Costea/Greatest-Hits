@@ -1,5 +1,8 @@
 package com.costea.GreatestHits;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class ChartEntry {
     private int position;
     private String artistName;
@@ -8,6 +11,17 @@ public class ChartEntry {
     private int points;
     private int weeks;
     private int peak;
+    private int currentWeek;
+
+    @JsonIgnore
+    public int getCurrentWeek() {
+        return currentWeek;
+    }
+
+    @JsonIgnore
+    public void setCurrentWeek(int currentWeek) {
+        this.currentWeek = currentWeek;
+    }
 
     public int getPeak() {
         return peak;

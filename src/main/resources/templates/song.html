@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Greatest Hits!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<blockquote class="blockquote text-center">
+    <h1><a href="/GreatestHits/">Greatest Hits!</a></h1>
+</blockquote>
+<div class="text-center">
+    <h3 th:inline="text"><a th:href="@{/artist/{name}(name=${artistName})}">[[${artistName}]]</a> - [[${songName}]]</h3>
+</div>
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>Week</th>
+        <th>Position</th>
+        <th>±</th>
+        <th>Points</th>
+        <th>Peak</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry:${chartEntries}">
+        <td th:text="${entry.currentWeek}">0</td>
+        <td th:text="${entry.position}">0</td>
+        <td th:text="${entry.insideParam}">=</td>
+        <td th:text="${entry.points}">0</td>
+        <td th:text="${entry.peak}">0</td>
+    </tr>
+    </tbody>
+</table>
+</body>
