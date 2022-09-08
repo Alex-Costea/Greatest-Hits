@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
+import static com.costea.GreatestHits.ChartSimulator.nrChartEntries;
 import static com.costea.GreatestHits.GreatestHitsApplication.chartSimulator;
 import static com.costea.GreatestHits.GreatestHitsApplication.mapper;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -37,7 +38,7 @@ public class ChartsController {
                 int artistId=artist.getID();
                 for(Song song: chartSimulator.getSongs())
                     if(song.getArtistID()==artistId)
-                        if(song.getWeek()>0)
+                        if(song.getWeek()>0 && song.getPeak()<=nrChartEntries)
                            songList.add(new SongListing(song));
                 songList.sort(Comparator.comparingInt(SongListing::getPositionAsInt));
                 model.addAttribute("artistName",artist.getName());

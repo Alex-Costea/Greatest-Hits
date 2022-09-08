@@ -9,7 +9,7 @@ import static java.lang.Math.min;
 
 
 class ChartSimulator {
-    private static final int nrChartEntries = 20; //chart entries to be shown every week
+    public static final int nrChartEntries = 20; //chart entries to be shown every week
     private static final ArrayList<String> maleNames = new ArrayList<>(); //list of male names
     private static final ArrayList<String> femaleNames = new ArrayList<>(); //list of female names
     private static final ArrayList<String> lastNames = new ArrayList<>(); //list of family names
@@ -21,6 +21,8 @@ class ChartSimulator {
     private ArrayList<Song> songs=new ArrayList<>(); //list of all songs
     private int currentWeek=-50;
     private List<Chart> allCharts = new ArrayList<>();
+
+    private final Set<String> allArtistSongCombos=new HashSet<>();
 
     public List<Chart> getAllCharts() {
         return allCharts;
@@ -34,11 +36,6 @@ class ChartSimulator {
         return songs;
     }
 
-    //just to be safe, this gets recalculated instead of using the currentWeek variable
-    public int getCurrentWeek()
-    {
-        return getAllCharts().get(getAllCharts().size()-1).getWeek();
-    }
 
     //initialize artist and song titles by reading them from the file
     private void InitNames() throws IOException {
@@ -122,8 +119,17 @@ class ChartSimulator {
             double prob=artist.songReleaseProb(currentWeek);
             if(prob>minSongProb)
             {
-                Song newSong=new Song(pickSongTitle(),artist);
-                songs.add(newSong);
+                String songTitle=pickSongTitle();
+                //Check duplicate artist - song combos, add ", Pt. X" if exists
+                if(allArtistSongCombos.contains(artist.getName()+"###"+songTitle))
+                {
+                    int i=2;
+                    //noinspection StatementWithEmptyBody
+                    for(;allArtistSongCombos.contains(artist.getName()+"###"+songTitle+", Pt. "+i);i++);
+                    songTitle=songTitle+", Pt. "+i;
+                }
+                songs.add(new Song(songTitle,artist));
+                allArtistSongCombos.add(artist.getName()+"###"+songTitle);
             }
         }
     }
@@ -213,6 +219,15 @@ class ChartSimulator {
             addSongs();
     }
 
+    public void CreateEntriesSet()
+    {
+        for(Chart chart:allCharts)
+            for(ChartEntry chartEntry:chart.getChartEntries())
+            {
+                allArtistSongCombos.add(chartEntry.getArtistName()+"###"+chartEntry.getSongName());
+            }
+    }
+
     public ChartSimulator(ArrayList<Artist> artists,ArrayList<Song> songs, ArrayList<Chart> chartData) throws IOException {
         InitNames();
         this.artists=artists;
@@ -222,6 +237,7 @@ class ChartSimulator {
         currentWeek=allCharts.get(allCharts.size()-1).getWeek();
         for(Song song:songs)
             song.transmitArtistData(artists);
+        CreateEntriesSet();
     }
 
     public ChartSimulator() throws IOException {
@@ -229,9 +245,11 @@ class ChartSimulator {
         initSongs();
         for(Song song:songs)
             song.transmitArtistData(artists);
+        CreateEntriesSet();
         //simulate 50 weeks before the first week, as to properly populate the charts
         for (int i = 0; i < 50; i++)
             nextWeek();
+
     }
 
 }
