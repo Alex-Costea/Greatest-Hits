@@ -1,4 +1,11 @@
-var maxWeek=1;
+var minWeek=0;
+while(document.getElementById("div"+(minWeek+1))===null)
+{
+    minWeek++;
+    break;
+}
+
+var maxWeek=minWeek;
 while(document.getElementById("div"+(maxWeek+1))!==null)
 {
     maxWeek++;

@@ -17,6 +17,8 @@ import java.util.*;
 import static com.costea.GreatestHits.ChartSimulator.nrChartEntries;
 import static com.costea.GreatestHits.GreatestHitsApplication.chartSimulator;
 import static com.costea.GreatestHits.GreatestHitsApplication.mapper;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Controller
@@ -24,7 +26,20 @@ public class ChartsController {
 
     @GetMapping("/")
     public String getChartEntries(Model model){
-        model.addAttribute("chart", chartSimulator.getAllCharts());
+        int size=chartSimulator.getAllCharts().size();
+        model.addAttribute("chart", chartSimulator.getAllCharts()
+                .subList(max(0,size-20),size));
+        return "index";
+    }
+
+    @GetMapping("/archive/{from}/{to}")
+    public String getArchivedEntries(@PathVariable("from") int from, @PathVariable("to") int to, Model model){
+        int size=chartSimulator.getAllCharts().size()-1;
+        from--;
+        if(from>to) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if(from<0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if(to>size+1) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        model.addAttribute("chart", chartSimulator.getAllCharts().subList(from, to));
         return "index";
     }
 
