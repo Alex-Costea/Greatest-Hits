@@ -19,7 +19,7 @@ import static com.costea.GreatestHits.ChartSimulator.nrChartEntries;
 import static com.costea.GreatestHits.GreatestHitsApplication.chartSimulator;
 import static com.costea.GreatestHits.GreatestHitsApplication.mapper;
 import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Controller
@@ -35,9 +35,9 @@ public class ChartsController {
         if(from==null)
             from=max(0,to-20);
         else from--; //off by one issues
-        if(from>to) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        if(from<0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        if(to>size) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if(from>to) throw new ResponseStatusException(BAD_REQUEST);
+        if(from<0) throw new ResponseStatusException(BAD_REQUEST);
+        if(to>size) throw new ResponseStatusException(BAD_REQUEST);
         model.addAttribute("chart", chartSimulator.getAllCharts().subList(from,to));
         model.addAttribute("from",from+1);
         model.addAttribute("to",to);
