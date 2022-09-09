@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,21 +26,22 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ChartsController {
 
     @GetMapping("/")
-    public String getChartEntries(Model model){
+    public String getChartEntries(@RequestParam(value = "from",required = false) Integer from,
+                                  @RequestParam(value = "to",required = false) Integer to,
+                                  Model model){
         int size=chartSimulator.getAllCharts().size();
-        model.addAttribute("chart", chartSimulator.getAllCharts()
-                .subList(max(0,size-20),size));
-        return "index";
-    }
-
-    @GetMapping("/archive/{from}/{to}")
-    public String getArchivedEntries(@PathVariable("from") int from, @PathVariable("to") int to, Model model){
-        int size=chartSimulator.getAllCharts().size()-1;
-        from--;
+        if(to==null)
+            to=size;
+        if(from==null)
+            from=max(0,to-20);
+        else from--; //off by one issues
         if(from>to) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         if(from<0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        if(to>size+1) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        model.addAttribute("chart", chartSimulator.getAllCharts().subList(from, to));
+        if(to>size) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        model.addAttribute("chart", chartSimulator.getAllCharts().subList(from,to));
+        model.addAttribute("from",from+1);
+        model.addAttribute("to",to);
+        model.addAttribute("size",size);
         return "index";
     }
 
