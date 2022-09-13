@@ -65,8 +65,6 @@ public class ChartsController {
         throw new ResponseStatusException(NOT_FOUND, "Artist not found!");
     }
 
-    //TODO: Solve in case multiple songs with same artist and song title
-    //TODO: Also make an actual page for it
     @GetMapping(value="/song/{artist}/{songName}")
     public String getSongByID(@PathVariable("artist") String artistName,
                               @PathVariable("songName") String songName,
