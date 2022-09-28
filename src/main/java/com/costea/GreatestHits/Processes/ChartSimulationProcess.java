@@ -1,20 +1,28 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.Processes;
+
+import com.costea.GreatestHits.DataObjects.Artist;
+import com.costea.GreatestHits.DataObjects.Chart;
+import com.costea.GreatestHits.DataObjects.ChartEntry;
+import com.costea.GreatestHits.DataObjects.Song;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 import static com.costea.GreatestHits.GreatestHitsApplication.getInputStream;
+import static com.costea.GreatestHits.Statics.Statics.nrChartEntries;
+import static com.costea.GreatestHits.Statics.Statics.ran;
+import static com.costea.GreatestHits.Statics.Statics.nextSongID;
 import static java.lang.Math.min;
 
 
-class ChartSimulator {
-    public static final int nrChartEntries = 20; //chart entries to be shown every week
+
+public class ChartSimulationProcess
+{
     private static final ArrayList<String> maleNames = new ArrayList<>(); //list of male names
     private static final ArrayList<String> femaleNames = new ArrayList<>(); //list of female names
     private static final ArrayList<String> lastNames = new ArrayList<>(); //list of family names
     private static final ArrayList<String> titles = new ArrayList<>(); //list of song titles
-    public static Random ran = new Random(); // random number generator
     private static final int nrArtists=500; //total number of songs
     private ArrayList<Artist> artists=new ArrayList<>(); //list of all artists
 
@@ -158,6 +166,7 @@ class ChartSimulator {
 
     //move charts to the next week
     public void nextWeek() throws IOException {
+        System.out.println("Add week");
         currentWeek++;
         for(Song song : songs)
             song.addWeek();
@@ -228,19 +237,19 @@ class ChartSimulator {
             }
     }
 
-    public ChartSimulator(ArrayList<Artist> artists,ArrayList<Song> songs, ArrayList<Chart> chartData) throws IOException {
+    public ChartSimulationProcess(ArrayList<Artist> artists, ArrayList<Song> songs, ArrayList<Chart> chartData) throws IOException {
         InitNames();
         this.artists=artists;
         this.songs=songs;
         this.allCharts=chartData;
-        Song.totalID=songs.get(songs.size()-1).getID()+1;
+        nextSongID =songs.get(songs.size()-1).getID()+1;
         currentWeek=allCharts.get(allCharts.size()-1).getWeek();
         for(Song song:songs)
             song.transmitArtistData(artists);
         CreateEntriesSet();
     }
 
-    public ChartSimulator() throws IOException {
+    public ChartSimulationProcess() throws IOException {
         InitNames();
         initSongs();
         for(Song song:songs)

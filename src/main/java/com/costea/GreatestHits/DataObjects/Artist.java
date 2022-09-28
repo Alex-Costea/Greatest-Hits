@@ -1,11 +1,10 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.DataObjects;
 
-import java.util.ArrayList;
-import static com.costea.GreatestHits.ChartSimulator.ran;
+import static com.costea.GreatestHits.Statics.Statics.ran;
 import static java.lang.Math.*;
 
 // Artist class: contains the artist info
-class Artist {
+public class Artist {
     private String name;
     //how popular the artist is. song popularity depends on this
     private double popularity;
@@ -15,7 +14,7 @@ class Artist {
     private final double releaseOffset = ran.nextDouble(Math.PI * 2);
     private final double releaseSchedule = ran.nextDouble(5.0, 10.0);
 
-    Artist(String name, int ID) {
+    public Artist(String name, int ID) {
         this.setName(name);
         this.setID(ID);
         this.setPopularity(ran.nextInt(0, 911) / 1000.0);
@@ -26,7 +25,7 @@ class Artist {
 
     //How likely is it that this artist will release a song this week?
     //Assumed to be evenly distributed from 0 to 1, although it is not strictly speaking
-    double songReleaseProb(int week)
+    public double songReleaseProb(int week)
     {
         //TODO: Improve formula
         double weekLikelihood = sin(week / releaseSchedule + releaseOffset)/2.57;

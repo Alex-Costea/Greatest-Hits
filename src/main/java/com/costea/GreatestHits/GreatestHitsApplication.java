@@ -1,7 +1,10 @@
 package com.costea.GreatestHits;
 
+import com.costea.GreatestHits.DataObjects.Artist;
+import com.costea.GreatestHits.DataObjects.Chart;
+import com.costea.GreatestHits.DataObjects.Song;
+import com.costea.GreatestHits.Processes.ChartSimulationProcess;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static com.costea.GreatestHits.Statics.Statics.chartSimulationProcess;
+import static com.costea.GreatestHits.Statics.Statics.mapper;
+
 @SpringBootApplication
 public class GreatestHitsApplication {
-	static ChartSimulator chartSimulator;
-	static ObjectMapper mapper = new ObjectMapper();
+
 
 	public static File accessFile(String fileName) throws IOException {
 		File file = new File("../gh_data/" + fileName);
@@ -37,12 +42,14 @@ public class GreatestHitsApplication {
 		try {
 			if(args.length>0 && args[0].equals("init"))
 			{
-				chartSimulator = new ChartSimulator();
+				System.out.println("Initializing data");
+				chartSimulationProcess = new ChartSimulationProcess();
 				for(int i=1;i<=1;i++)
-					chartSimulator.nextWeek();
+					chartSimulationProcess.nextWeek();
 			}
 			else
 			{
+				System.out.println("Re-reading data");
 				TypeFactory t = TypeFactory.defaultInstance();
 				ArrayList<Artist> artistList = mapper.readValue(accessFile("artistData.json"),
 						t.constructCollectionType(ArrayList.class,Artist.class));
@@ -50,23 +57,24 @@ public class GreatestHitsApplication {
 						t.constructCollectionType(ArrayList.class,Song.class));
 				ArrayList<Chart> chartData = mapper.readValue(accessFile("chartData.json"),
 						t.constructCollectionType(ArrayList.class,Chart.class));
-				chartSimulator = new ChartSimulator(artistList,songList,chartData);
+				chartSimulationProcess = new ChartSimulationProcess(artistList,songList,chartData);
 				if(args.length>0 && args[0].equals("addweek"))
 				{
-					chartSimulator.nextWeek();
+					chartSimulationProcess.nextWeek();
 				}
 			}
+			System.out.println("Saving data");
 			//save data
 			FileWriter jsonWriter = new FileWriter(accessFile("chartData.json"));
-			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getAllCharts()));
+			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulationProcess.getAllCharts()));
 			jsonWriter.close();
 
 			jsonWriter = new FileWriter(accessFile("artistData.json"));
-			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getArtists()));
+			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulationProcess.getArtists()));
 			jsonWriter.close();
 
 			jsonWriter = new FileWriter(accessFile("songData.json"));
-			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getSongs()));
+			jsonWriter.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulationProcess.getSongs()));
 			jsonWriter.close();
 
 		}
@@ -75,6 +83,7 @@ public class GreatestHitsApplication {
 			System.out.println("File reading/writing didn't work!");
 			ex.printStackTrace();
 		}
+		System.out.println("Initializing complete!");
 	}
 
 }

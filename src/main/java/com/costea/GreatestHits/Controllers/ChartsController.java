@@ -1,5 +1,6 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.Controllers;
 
+import com.costea.GreatestHits.DataObjects.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
-import static com.costea.GreatestHits.ChartSimulator.nrChartEntries;
-import static com.costea.GreatestHits.GreatestHitsApplication.chartSimulator;
-import static com.costea.GreatestHits.GreatestHitsApplication.mapper;
+import static com.costea.GreatestHits.Statics.Statics.*;
 import static java.lang.Math.max;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -29,7 +28,7 @@ public class ChartsController {
     public String getChartEntries(@RequestParam(value = "from",required = false) Integer from,
                                   @RequestParam(value = "to",required = false) Integer to,
                                   Model model){
-        int size=chartSimulator.getAllCharts().size();
+        int size=chartSimulationProcess.getAllCharts().size();
         if(to==null)
             to=size;
         if(from==null)
@@ -38,7 +37,7 @@ public class ChartsController {
         if(from>to) throw new ResponseStatusException(BAD_REQUEST);
         if(from<0) throw new ResponseStatusException(BAD_REQUEST);
         if(to>size) throw new ResponseStatusException(BAD_REQUEST);
-        model.addAttribute("chart", chartSimulator.getAllCharts().subList(from,to));
+        model.addAttribute("chart", chartSimulationProcess.getAllCharts().subList(from,to));
         model.addAttribute("from",from+1);
         model.addAttribute("to",to);
         model.addAttribute("size",size);
@@ -49,11 +48,11 @@ public class ChartsController {
     public String getArtistByName(@PathVariable("name") String artistName,Model model)
     {
         List<SongListing> songList=new ArrayList<>();
-        for(Artist artist : chartSimulator.getArtists())
+        for(Artist artist : chartSimulationProcess.getArtists())
             if(Objects.equals(artist.getName(), artistName))
             {
                 int artistId=artist.getID();
-                for(Song song: chartSimulator.getSongs())
+                for(Song song: chartSimulationProcess.getSongs())
                     if(song.getArtistID()==artistId)
                         if(song.getWeek()>0 && song.getPeak()<=nrChartEntries)
                            songList.add(new SongListing(song));
@@ -72,7 +71,7 @@ public class ChartsController {
     {
         List<ChartEntry> chartEntries=new ArrayList<>();
         boolean foundEntries=false;
-        for(Chart chart :chartSimulator.getAllCharts())
+        for(Chart chart :chartSimulationProcess.getAllCharts())
             for (ChartEntry chartEntry : chart.getChartEntries())
                 if (chartEntry.getArtistName().equals(artistName) && chartEntry.getSongName().equals(songName))
                 {
@@ -96,7 +95,7 @@ public class ChartsController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         try {
-            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulator.getAllCharts());
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(chartSimulationProcess.getAllCharts());
             return new ResponseEntity<>(json, responseHeaders, HttpStatus.CREATED);
         }
         catch (JsonProcessingException ex)

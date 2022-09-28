@@ -1,7 +1,6 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.DataObjects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class ChartEntry {
     private int position;

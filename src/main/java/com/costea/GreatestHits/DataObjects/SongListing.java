@@ -1,4 +1,4 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.DataObjects;
 
 public class SongListing {
     private String position;

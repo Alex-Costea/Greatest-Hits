@@ -1,20 +1,21 @@
-package com.costea.GreatestHits;
+package com.costea.GreatestHits.DataObjects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 
+import static com.costea.GreatestHits.Statics.Statics.ran;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static com.costea.GreatestHits.ChartSimulator.ran;
+import static com.costea.GreatestHits.Statics.Statics.nextSongID;
 
-class Song {
-    public static final int MAGIC_VALUE=999;
+public class Song {
+    private static final int MAGIC_VALUE=999;
     private String name;
     private final double decay; //how quickly the song fan reception goes down
     private double popularity;
     private double fanReception; // goes down in time
-    public static int totalID=0; // which ID are we at?
+
     private int ID; // current ID
     private int week; //weeks since release
     private double points; // correlated to popularity * reception
@@ -23,7 +24,7 @@ class Song {
     private Integer currentPosition = MAGIC_VALUE;
     private int artistID;
 
-    Song(String name,Artist artist)
+    public Song(String name, Artist artist)
     {
         this.setName(name);
         this.artist=artist;
@@ -32,8 +33,8 @@ class Song {
         this.popularity=Math.pow(min(0.91,max(0, artist.getPopularity() +offsetPopularity)),4);
         double offsetQuality=ran.nextGaussian(); //random value used to calculate quality
         this.fanReception= min(10, max(1, artist.getQuality() + offsetQuality));
-        totalID+=1;
-        this.setID(totalID);
+        nextSongID +=1;
+        this.setID(nextSongID);
         this.setWeek(0);
     }
 
