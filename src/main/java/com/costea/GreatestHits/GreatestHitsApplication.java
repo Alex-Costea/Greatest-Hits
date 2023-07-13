@@ -31,7 +31,7 @@ public class GreatestHitsApplication {
 	}
 
 	public static InputStream getInputStream(String fileName) throws IOException {
-		return (new ClassPathResource("com/costea/" + fileName)).getInputStream();
+		return (new ClassPathResource("com/costea/GreatestHits/" + fileName)).getInputStream();
 	}
 
 	public static void main(String[] args) {
